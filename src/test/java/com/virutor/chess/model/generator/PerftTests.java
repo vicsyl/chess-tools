@@ -68,7 +68,7 @@ public class PerftTests {
 		
 		List<Object[]> ret = new ArrayList<Object[]>();
 		
-		PerftTestData data = new PerftTestData();
+		PerftTestData data = new PerftTestData();		
 		data.fenString = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 		data.nodes = new long[] {20, 400, 8902, 197281, 4865609/*, 119060324*/};
 		data.captures = new long[] {0, 0, 34, 1576, 82719, 82719};

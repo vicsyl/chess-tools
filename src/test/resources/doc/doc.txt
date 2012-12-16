@@ -1,0 +1,33 @@
+Notes for Dusko:
+
+
+General:
+
+ * the idea is to employ maven module(s) that would contain core functionality
+ shared among all platform specific modules (ui for andriod, 
+ desktop, desktop html5(?), web(?), iOS(?))
+ * as much code as possible should be common as this would presumably save time
+ when adding Virutor UI clones for new platforms 
+ * this means that also UI related code could be put here as long as
+ it doesn't have dependency to any UI library (generic interfaces etc.)
+ 
+ Content:
+ * UCI connector to Virutor Chess engine written in C/C++
+ 	 see http://en.wikipedia.org/wiki/Universal_Chess_Interface
+ * Move generator to check moves done by human or computer players
+ * PGN parser/formatter http://en.wikipedia.org/wiki/Portable_Game_Notation
+ * chess clock abstraction
+ * data structures abstracting chess games, positions, players, game properties, etc.
+ * others   
+
+TODO:
+
+* abstraction around GameStateServer is broken.
+    a) it should be more lightweight and represent a UCI connector for a single 
+		UCI engine  
+	b) master game data should be stored in UiGame (currently in java-desktop, it should be moved here)
+* there are redundant data structures
+* there are not enough tests (the coverage would be insufficient - we should try to employ some coverage tool)
+* there is a lot of unimplemented functionality (game final states, UCI connector, etc.)
+* ServerGame - a check clock abstraction - is buggy
+* code style should be improved a lot (dead code, formatting, unused imports, javadoc, etc.)   

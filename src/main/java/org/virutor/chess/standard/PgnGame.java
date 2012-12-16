@@ -1,9 +1,14 @@
 package org.virutor.chess.standard;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,13 +17,11 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.print.DocFlavor.STRING;
-
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.virutor.chess.model.Game;
 import org.virutor.chess.model.Move;
 import org.virutor.chess.model.Position;
-import org.virutor.chess.model.generator.MoveGenerator.GeneratedMoves;
 
 /**
  * TODO check Game for not null 
@@ -84,6 +87,10 @@ public class PgnGame {
 	private Game game;
 
 	private static final Pattern PROPERTY_PATTERN = Pattern.compile("\\[\\s*(\\w+)\\s+\"(.*)\"\\]");
+	
+	public static PgnGame parse(File file) throws FileNotFoundException, IOException {
+		return parse(new FileInputStream(file));
+	}
 	
 	public static PgnGame parse(InputStream istream) throws IOException {
 		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(istream));
@@ -188,11 +195,28 @@ public class PgnGame {
 		stringBuilder.append("[" + key + " \"" + properties.get(key) + "\"]\n");
 	}
 	
+	public static void saveToFile(File file, Game game) throws IOException {
+		
+		PgnGame pgnGame = new PgnGame();
+		pgnGame.setGame(game);
+		OutputStreamWriter outputStreamWriter = null;
+
+		try {
+			outputStreamWriter = new OutputStreamWriter(new FileOutputStream(file));
+			outputStreamWriter.append(pgnGame.format());
+			
+		} finally {
+			IOUtils.closeQuietly(outputStreamWriter); 
+		}
+		
+	}
+	
 	public String format() {
 
 		for(String key : SEVEN_TAG_ROSTER.keySet()) {
 			if(!properties.containsKey(key)) {
-				throw new IllegalStateException("Mandatory property " + key + " not set");
+				properties.put(key, " unknown [HACK]");
+				//throw new IllegalStateException("Mandatory property " + key + " not set");
 			}
 		}
 		if(game == null) {
@@ -216,7 +240,7 @@ public class PgnGame {
 		List<Position> positions = game.getPositions();		
 		for(int i = 0; i < moves.size(); i++) {
 			if(positions.get(i).colorToMove == Position.COLOR_WHITE) {
-				stringBuilder.append("" + (i/2 + 1) + ". ");
+				stringBuilder.append("" + (i/2 + 1) + ".");
 			}
 			SanMove san = new SanMove(moves.get(i), positions.get(i), game.getGeneratedMovesList().get(i));
 			stringBuilder.append(san.toString() + " ");			
