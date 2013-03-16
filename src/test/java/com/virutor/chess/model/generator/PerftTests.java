@@ -19,6 +19,7 @@ import org.virutor.chess.model.Position;
 import org.virutor.chess.model.generator.MoveGenerator;
 import org.virutor.chess.model.generator.MoveGenerator.Continuation;
 import org.virutor.chess.model.generator.MoveGenerator.GeneratedMoves;
+import org.virutor.chess.standard.FenUtils;
 
 import com.virutor.chess.model.UIUtils;
 
@@ -122,7 +123,7 @@ public class PerftTests {
 		//setVariant();
 		
 		Position position = new Position();
-		position.setFen(data.fenString);
+		FenUtils.setFen(data.fenString, position);
 		
 		System.out.println("Position: \n" + UIUtils.prettyPositionString(position));
 		

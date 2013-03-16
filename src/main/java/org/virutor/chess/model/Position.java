@@ -102,6 +102,17 @@ public class Position implements Cloneable {
 		null, null, null, null, null, null, null, null, null, null, 
 	};
 
+	public Field getFieldFrom8x8(int row, int file) {
+		if(row < 1 || row > 8) {
+			throw new IllegalArgumentException("row out of range (" + row + ")");
+		}
+		if(file < 1 || file > 8) {
+			throw new IllegalArgumentException("file out of range (" + row + ")");
+		}
+		return board[row*10 + file + 10];
+		
+	}
+	
 	public static int getRow(int index) {
 		return (index / 10) - 1; 
 	}
@@ -153,7 +164,14 @@ public class Position implements Cloneable {
 		emptyBoard();	
 	}
 	
-	private void emptyBoard() {
+	public static Position getStartPosition() {
+		Position position = new Position();
+		position.setStartPosition();
+		return position;
+	} 
+	
+	//TODO made public because of FenUtils
+	public void emptyBoard() {
 		for(int i = 0; i < 120; i++) {
 			board[i] = new Field();
 			if(i%10 == 0 || i%10 == 9 || i < 20 || i > 99) {
@@ -234,6 +252,7 @@ public class Position implements Cloneable {
 		return this;
 	}
 	
+	/*
 	String patternString = 	"([rnbqkpRNBKQP1-8]+)/([rnbqkpRNBKQP1-8]+)/([rnbqkpRNBKQP1-8]+)/([rnbqkpRNBKQP1-8]+)/" +
 							"([rnbqkpRNBKQP1-8]+)/([rnbqkpRNBKQP1-8]+)/([rnbqkpRNBKQP1-8]+)/([rnbqkpRNBKQP1-8]+)" +
 							" (w|b) ([KQkq]+|\\-) ([a-h][1-8]|\\-)([ \\d]?)([ \\d]?)";
@@ -279,9 +298,11 @@ public class Position implements Cloneable {
 			halfMoveClock = Integer.parseInt(matcher.group(13).substring(1));
 		}
 		
-	}
+	}*/
 
-	private void setKingIndices() {
+	/*
+	//TODO made public because of FenUtils
+	public void setKingIndices() {
 		kingIndices[0] = OFF_BOARD;		
 		kingIndices[1] = OFF_BOARD;		
 		for(int i = A1; i <= H8; i++) {
@@ -294,7 +315,8 @@ public class Position implements Cloneable {
 		}
 	}
 	
-	private void setPossibleEp(String epFen) {
+	//TODO made public because of FenUtils
+	public void setPossibleEp(String epFen) {
 		
 		possibleEpIndex = OFF_BOARD;
 		if(epFen.equals("-")) {
@@ -302,7 +324,7 @@ public class Position implements Cloneable {
 		}
 		possibleEpIndex = parseField(epFen);
 		
-	}
+	}*/
 
 	public static int parseRow(char c) {
 		
@@ -323,8 +345,9 @@ public class Position implements Cloneable {
 			return Position.OFF_BOARD;
 		}
 		
-	}
+	}	
 	
+	//TODO check arguments
 	public static int parseField(String field) {
 		
 		int column1_8 = parseColumn(field.charAt(0));		
@@ -336,7 +359,9 @@ public class Position implements Cloneable {
 		return row1_8 * 10 + 10 + column1_8;
 	}
 	
-	private void setFenCastles(String fenCastles) {
+	/*
+	//TODO made public because of FenUtils
+	public void setFenCastles(String fenCastles) {
 		
 		for(int i = 0; i < 4; i++) {
 			castles[i] = false;
@@ -362,7 +387,8 @@ public class Position implements Cloneable {
 		}
 	}
 	
-	private void setFen1_8Row(int row, String fenRow) {
+	//TODO made public because of FenUtils
+	public void setFen1_8Row(int row, String fenRow) {
 		
 		int column = 1;
 		for(int i = 0; i < fenRow.length(); i++) {
@@ -433,6 +459,6 @@ public class Position implements Cloneable {
 			
 		}
 		
-	}
+	}*/
 	
 }

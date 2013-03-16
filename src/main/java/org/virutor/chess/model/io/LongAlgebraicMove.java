@@ -48,11 +48,8 @@ public class LongAlgebraicMove {
 		indexTo = Position.parseField(str.substring(2, 4));
 		if(str.length() > 4) {
 			piecePromoted = parsePromotedPieceType(str.charAt(4)); 
-		}
-		
-		if(getIndexFrom() == 21 && getIndexTo() == 21) {
-			String g = null;
-		}
+		}	
+	
 		
 	}
 	

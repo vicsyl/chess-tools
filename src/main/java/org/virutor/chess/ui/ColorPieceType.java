@@ -1,5 +1,7 @@
 package org.virutor.chess.ui;
 
+import org.virutor.chess.model.Piece;
+
 public enum ColorPieceType {
 
 	NO_PIECE(-1),
@@ -26,5 +28,31 @@ public enum ColorPieceType {
 		return code;
 	}
 	
+	public byte asPiece() {
+		
+		switch(this) {
+			case BLACK_BISHOP: 
+			case WHITE_BISHOP:
+				return Piece.PIECE_BISHOP;
+			case BLACK_KING: 
+			case WHITE_KING:
+				return Piece.PIECE_KING;
+			case BLACK_KNIGHT: 
+			case WHITE_KNIGHT:
+				return Piece.PIECE_KNIGHT;
+			case BLACK_PAWN: 
+			case WHITE_PAWN:
+				return Piece.PIECE_PAWN;
+			case BLACK_QUEEN: 
+			case WHITE_QUEEN:
+				return Piece.PIECE_QUEEN;
+			case BLACK_ROOK: 
+			case WHITE_ROOK:
+				return Piece.PIECE_ROOK;
+			default:
+				throw new IllegalArgumentException("Unknown piece type");					
+		}
+	}
+ 
 
 }
