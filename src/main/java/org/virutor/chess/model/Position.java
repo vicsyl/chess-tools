@@ -7,13 +7,18 @@ import static org.virutor.chess.model.Piece.PIECE_PAWN;
 import static org.virutor.chess.model.Piece.PIECE_QUEEN;
 import static org.virutor.chess.model.Piece.PIECE_ROOK;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import org.virutor.chess.model.generator.MoveGenerator;
 
 
 public class Position implements Cloneable {
 
 	
+	public static enum Continuation {
+		POSSIBLE_MOVES,
+		CHECK_MATE,
+		STALEMATE;
+	}
+
 	public static final int A1 = 21;
 	public static final int B1 = 22;
 	public static final int C1 = 23;
@@ -143,6 +148,16 @@ public class Position implements Cloneable {
 	public static final int CASTLE_INDEX_BLACK_0_0_0 = 3;
 
 
+	//TODO what about generated moves, too!!!!	
+	private Continuation continuationCache;
+	
+	public Continuation getContinuation() {
+		if(continuationCache == null) {
+			continuationCache = MoveGenerator.generateMoves(this).continuation;
+		}
+		return continuationCache;			
+		
+	}
 	
 	//public Piece[] pieces = new Piece[32];
 	public Field[] board = new Field[120];

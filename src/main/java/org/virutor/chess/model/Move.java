@@ -1,7 +1,9 @@
 package org.virutor.chess.model;
 
-import static org.virutor.chess.model.Piece.*;
-import static org.virutor.chess.model.Position.*;
+import static org.virutor.chess.model.Piece.NO_PIECE;
+import static org.virutor.chess.model.Position.OFF_BOARD;
+
+import org.virutor.chess.standard.SanMove;
 
 public class Move {
 
@@ -54,6 +56,38 @@ public class Move {
 		if (to != other.to)
 			return false;
 		return true;
+	}
+	
+	/**
+	 * This is mostly to help when debugging
+	 */
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		
+		switch(this.castle_ep_flag) {
+			case CASTLE_EP_FLAG_WHITE_0_0:
+			case CASTLE_EP_FLAG_BLACK_0_0:
+				return "0-0";
+		case CASTLE_EP_FLAG_WHITE_0_0_0:
+		case CASTLE_EP_FLAG_BLACK_0_0_0:
+				return "0-0-0";
+		}
+		
+		sb.append(SanMove.PIECES_STRINGS.get(Byte.valueOf(piece_moved)));
+		sb.append(Position.FIELD_STRINGS[from]);
+		sb.append(piece_captured == Piece.NO_PIECE ? "-" : "x");
+		sb.append(Position.FIELD_STRINGS[to]);
+		
+		if(castle_ep_flag == CASTLE_EP_FLAG_EP) {
+			sb.append("e.p.");
+		}
+		
+		if(piece_promoted != NO_PIECE) {
+			sb.append(SanMove.PIECES_STRINGS.get(Byte.valueOf(piece_promoted)));
+		}
+		return sb.toString();		
+		
 	}
 	
 	

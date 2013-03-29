@@ -7,8 +7,8 @@ import java.util.Map;
 import org.virutor.chess.model.Move;
 import org.virutor.chess.model.Piece;
 import org.virutor.chess.model.Position;
+import org.virutor.chess.model.Position.Continuation;
 import org.virutor.chess.model.generator.MoveGenerator;
-import org.virutor.chess.model.generator.MoveGenerator.Continuation;
 import org.virutor.chess.model.generator.MoveGenerator.GeneratedMoves;
 
 public class SanMove {
@@ -17,7 +17,7 @@ public class SanMove {
 	private static final String LONG_CASTLE = "O-O-O";
 	
 	
-	private static final Map<Byte, String> PIECES_STRINGS = new HashMap<Byte, String>();
+	public static final Map<Byte, String> PIECES_STRINGS = new HashMap<Byte, String>();
 	private static final Map<Character, Byte> CHAR_BYTES = new HashMap<Character, Byte>();
 	static {
 		PIECES_STRINGS.put(Piece.PIECE_KING, "K");
@@ -49,6 +49,8 @@ public class SanMove {
 	
 	public static Move parse(String input, Position startingPosition, GeneratedMoves generatedMoves) { 
 
+		//NOTE / TODO: check for # and + if it matches reality???!!
+		
 		if(SHORT_CASTLE.equals(input)) {
 			return getShortCastle(generatedMoves);
 		} else if (LONG_CASTLE.equals(input)) {
@@ -63,53 +65,56 @@ public class SanMove {
 	
 	private static Move parseOrdinaryMove(GeneratedMoves generatedMoves, String input) {
 		
+		String localInput = input;
 		
 		//TODO validate length >= 2
 		
-		Byte piece = CHAR_BYTES.get(input.charAt(0));
+		
+		Byte piece = CHAR_BYTES.get(localInput.charAt(0));
 		if(piece == null) {
 			piece = Piece.PIECE_PAWN;
 		} else {
-			input = input.substring(1);
+			localInput = localInput.substring(1);
 		}
 			
 
 		//TODO validate length >= 2		
-		int from120Index = Position.parseField(input);
+		int from120Index = Position.parseField(localInput);
 		int fromRow = Position.OFF_BOARD;
 		int fromColumn = Position.OFF_BOARD;
 		int to120Index = Position.OFF_BOARD;
 		boolean capture = false;
-		byte pieceCaptured = Piece.NO_PIECE;
+		byte piecePromoted = Piece.NO_PIECE;
 		
 		if(from120Index == Position.OFF_BOARD) {
-			fromColumn = Position.parseColumn(input.charAt(0));
+			fromColumn = Position.parseColumn(localInput.charAt(0));
 			if(fromColumn == Position.OFF_BOARD) {
-				fromRow = Position.parseRow(input.charAt(0));
+				fromRow = Position.parseRow(localInput.charAt(0));
 			}
 			if(fromColumn != Position.OFF_BOARD || fromRow != Position.OFF_BOARD) {
-				input = input.substring(1);
+				localInput = localInput.substring(1);
 			}
 		} else {
-			input = input.substring(2);
-			if(input.length() == 0) {
+			localInput = localInput.substring(2);
+			//what is this???!!!!
+			//if(input.length() == 0) {
 				to120Index = from120Index;
 				from120Index = Position.OFF_BOARD;
-			}
+			//}
 		}
 		
 		//TODO validate length from here to the end
 
 		if(to120Index == Position.OFF_BOARD) {
-			if(input.charAt(0) == 'x') { 		
+			if(localInput.charAt(0) == 'x') { 		
 				capture = true;			
-				input = input.substring(1);
+				localInput = localInput.substring(1);
 			}
 			
-			if(input.length() >= 2 && to120Index == Position.OFF_BOARD) {
-				to120Index = Position.parseField(input);
+			if(localInput.length() >= 2 && to120Index == Position.OFF_BOARD) {
+				to120Index = Position.parseField(localInput);
 				if(to120Index != Position.OFF_BOARD) {
-					input = input.substring(2);
+					localInput = localInput.substring(2);
 				}
 			}
 			if(to120Index == Position.OFF_BOARD) {
@@ -118,13 +123,13 @@ public class SanMove {
 			}
 		}
 		
-		if(input.length() != 0) {
-			if(input.charAt(0) == '=') {
-				pieceCaptured = CHAR_BYTES.get(input.charAt(1));
-				input = input.substring(2);
+		if(localInput.length() != 0) {
+			if(localInput.charAt(0) == '=') {
+				piecePromoted = CHAR_BYTES.get(localInput.charAt(1));
+				localInput = localInput.substring(2);
 			}
-		}
-
+		}	
+		
 		//TODO chech(+) and checkMate(#)
 		
 		for(Move move : generatedMoves.moves) {
@@ -144,7 +149,7 @@ public class SanMove {
 			if(fromColumn != Position.OFF_BOARD && (move.from % 10) != fromColumn) {
 				continue;
 			}
-			if(pieceCaptured != Piece.NO_PIECE && move.piece_captured != pieceCaptured) {
+			if(piecePromoted != Piece.NO_PIECE && move.piece_promoted != piecePromoted) {
 				continue;
 			}
 			return move;
@@ -214,6 +219,8 @@ public class SanMove {
 						case ROW_CONFLICT: 
 							sb.append(Position.getFile(move.from));
 							break;
+						default:
+							break;								
 					}					
 					
 				}				
@@ -231,17 +238,16 @@ public class SanMove {
 					
 		}
 		
-		if(generatedMoves.continuation == Continuation.CHECK_MATE) {
-			sb.append("#");
-		} else if(MoveGenerator.isInCheck(MoveGenerator.doMove(position, move, generatedMoves))) {
+		
+		//TODO do it even for castles etc!!!		
+		Position finalPosition = MoveGenerator.doMove(position, move);
+		if(finalPosition.getContinuation() == Continuation.CHECK_MATE) {
+			sb.append("#");			
+		} else if(MoveGenerator.isInCheck(finalPosition)) {
 			sb.append("+");
 		}
 		
-		
 		moveRepresentation = sb.toString();
-		
-	
-		
 	}
 	
 	private enum MoveConflict {
@@ -251,10 +257,11 @@ public class SanMove {
 		BOTH_CONFLICTS		
 	}
 	
-	MoveConflict getAmbiguousMove(List<Move> moves, Move move) {
+	private MoveConflict getAmbiguousMove(List<Move> moves, Move move) {
 		
 		boolean fileConflict = false;
 		boolean rowConflict = false;		
+		boolean simpleConflict = false; 
 		
 		for(Move moveIter : moves) {
 			if(move.equals(moveIter)) {
@@ -267,6 +274,8 @@ public class SanMove {
 				continue;
 			}
 			
+			simpleConflict = true;
+			
 			if(Position.getFile(moveIter.from) == Position.getFile(move.from)) {
 				fileConflict = true;
 				continue;
@@ -277,7 +286,7 @@ public class SanMove {
 			}
 		}
 		
-		if(!fileConflict && !rowConflict) {
+		if(!fileConflict && !rowConflict && !simpleConflict) {
 			return MoveConflict.NO_CONFLICT;
 		}
 		if(fileConflict && rowConflict) {

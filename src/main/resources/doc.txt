@@ -1,0 +1,13 @@
+continue:
+
+pgn game test -> should be able to test for mate, round (unknown), etc.
+CONTINUE: pgn tests
+CONTINUE(?): PlyCount?, TimeControl, Comments 
+
+
+plan:
+
+	implement 
+		a) 50 move rule
+		b) threefold rep. rule 
+			i) implement zobrist hashing!!!!  

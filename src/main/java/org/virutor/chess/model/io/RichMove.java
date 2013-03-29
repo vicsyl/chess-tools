@@ -6,8 +6,8 @@ import java.util.Map;
 import org.virutor.chess.model.Move;
 import org.virutor.chess.model.Piece;
 import org.virutor.chess.model.Position;
+import org.virutor.chess.model.Position.Continuation;
 import org.virutor.chess.model.generator.MoveGenerator;
-import org.virutor.chess.model.generator.MoveGenerator.Continuation;
 import org.virutor.chess.model.generator.MoveGenerator.GeneratedMoves;
 
 @Deprecated

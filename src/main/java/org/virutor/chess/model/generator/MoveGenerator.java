@@ -101,17 +101,11 @@ public class MoveGenerator {
 	
 	
 	
-	public static enum Continuation {
-		POSSIBLE_MOVES,
-		CHECK_MATE,
-		STALEMATE;
-	}
-	
 	public static class GeneratedMoves {
 
 		public List<Move> moves = new ArrayList<Move>();
 		public List<Position> position = new ArrayList<Position>();
-		public Continuation continuation = Continuation.POSSIBLE_MOVES;
+		public Position.Continuation continuation = Position.Continuation.POSSIBLE_MOVES;
 		
 	}
 	
@@ -120,7 +114,7 @@ public class MoveGenerator {
 	}
 
 	public static Position doMove(Position position, Move move, GeneratedMoves generatedMoves) {
-		if(generatedMoves.continuation != Continuation.POSSIBLE_MOVES) {
+		if(generatedMoves.continuation != Position.Continuation.POSSIBLE_MOVES) {
 			throw new RuntimeException("No possible moves");
 		}
 		for(int i = 0 ; i < generatedMoves.moves.size(); i++) {
@@ -271,9 +265,9 @@ public class MoveGenerator {
 		} 
 		
 		if(ret.moves.size() == 0) {
-			ret.continuation = isInCheck(position) ? Continuation.CHECK_MATE : Continuation.STALEMATE; 
+			ret.continuation = isInCheck(position) ? Position.Continuation.CHECK_MATE : Position.Continuation.STALEMATE; 
 		} else {
-			ret.continuation = Continuation.POSSIBLE_MOVES;
+			ret.continuation = Position.Continuation.POSSIBLE_MOVES;
 		}
 		
 		return ret;

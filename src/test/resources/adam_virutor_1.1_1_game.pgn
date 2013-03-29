@@ -1,0 +1,36 @@
+[Event "Chess for Android Game"]
+[Site "Ceská republika"]
+[Date "2012.12.30"]
+[Round "?"]
+[White "Self"]
+[Black "VIRUTOR CHESS 1.1"]
+[Result "1-0"]
+[PlyCount "49"]
+[TimeControl "1/1"]
+[Device "HTC Wildfire S A510e"]
+
+1. b4 e5
+2. b5 c6
+3. a4 Nf6
+4. Bb2 Bd6
+5. Nc3 O-O
+6. e4 h5
+7. Nf3 cxb5
+8. axb5 Bc7
+9. Bc4 d6
+10. O-O Bg4
+11. h3 Bd7
+12. d4 exd4
+13. Nxd4 g5
+14. Nd5 Nxe4
+15. Qxh5 Ba5
+16. Nc6 Bc3
+17. Bxc3 Nxc3
+18. Nxd8 Nxd5
+19. Bxd5 Kg7
+20. Qxg5+ Kh8
+21. Qh6+ Kg8
+22. Qg6+ Kh8
+23. Nxf7+ Rxf7
+24. Bxf7 Bxh3
+25. Qh6# 1-0
