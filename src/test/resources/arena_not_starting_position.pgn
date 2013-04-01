@@ -1,0 +1,21 @@
+[Event "Computer chess game"]
+[Site "VACLAV-PC"]
+[Date "2013.04.01"]
+[Round "?"]
+[White "Rybka 2.2 32 bit"]
+[Black "vaclav"]
+[Result "*"]
+[BlackElo "2400"]
+[Time "18:38:01"]
+[WhiteElo "2000"]
+[TimeControl "1/0:300"]
+[SetUp "1"]
+[FEN "2kr3r/ppp2pp1/2n4p/4p2P/6b1/2P1PNP1/PP1N4/R3K2R b KQ - 0 16"]
+[Termination "unterminated"]
+[PlyCount "2"]
+[WhiteType "program"]
+[BlackType "human"]
+
+16. ... Bxf3 17. Nxf3 {(Nd2xf3 Rd8-d7 Ke1-e2 Rh8-d8 Rh1-h4 a7-a6 Rh4-g4
+f7-f5 Rg4-h4) -0.84/12 2} *
+

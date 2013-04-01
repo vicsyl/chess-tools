@@ -1,7 +1,10 @@
 package com.virutor.chess.standard;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,6 +14,7 @@ import java.util.Map;
 
 import junit.framework.Assert;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -24,7 +28,9 @@ import org.virutor.chess.standard.PgnRound;
 
 @RunWith(Parameterized.class)
 public class PgnGameTest {
-	
+
+	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
+
 	private static class ExpectedValuesForGame {
 		Result result;
 		ResultExplanation resultExplanation;
@@ -84,11 +90,14 @@ public class PgnGameTest {
 
 		
 		ret.add(new Object[] {"/sample_pgn.pgn", new ExpectedValues()});
+		ret.add(new Object[] {"/fritz_11_variation.pgn", new ExpectedValues()});
 		
 		return ret;
 
 	}
 	
+	
+	//TODO remove??
 	@Test
 	public void formattedCheckedTest() throws Exception {
 		
@@ -98,33 +107,94 @@ public class PgnGameTest {
 		StringWriter stringWriter = new StringWriter();
 		pgnGamesOriginal.write(stringWriter);		
 		String stringRepresentation = stringWriter.toString();	
-				
-		
 		
 	}
+	
+	@Test
+	public void parsedFormatParsed() throws Exception {
+		
+		PgnGameSuite pgnGamesOriginal = PgnGame.parse(getClass().getResourceAsStream(path));
+
+		
+		StringWriter stringWriter = new StringWriter();
+
+		pgnGamesOriginal.write(stringWriter);		
+		String stringRepresentation = stringWriter.toString();		
+		InputStream istream = new ByteArrayInputStream(stringRepresentation.getBytes());
+		
+		PgnGameSuite pgnGamesCopy = PgnGame.parse(istream);
+		
+		Assert.assertEquals(pgnGamesOriginal.pgnGames, pgnGamesCopy.pgnGames);
+		
+	}
+	
+
+	@Test
+	public void originalParseFormat() throws Exception {
+		
+		//TODO original sample_pgn.pgn has '0-1' at the end, 
+		// but it is indeed mate (#). What is the proper formatting ? #implementation #standard 
+		
+		StringBuilder sb = inputStreamAsStringBuilder(getClass().getResourceAsStream(path));		
+		PgnGameSuite pgnGamesOriginal = PgnGame.parse(getClass().getResourceAsStream(path));
+		
+		StringWriter stringWriter = new StringWriter();
+		pgnGamesOriginal.write(stringWriter);		
+		String originalStringRepresentation = stringWriter.toString();		
+		
+		String expectedWithNoWhiteSpaces = sb.toString().replaceAll("\\s", "");
+		String realWithNoWhiteSpaces = originalStringRepresentation.replaceAll("\\s", "");
+		Assert.assertEquals(expectedWithNoWhiteSpaces, realWithNoWhiteSpaces);
+
+		String expectedWithNoLineBreaks = sb.toString().replaceAll("\n", "");
+		String realWithNoLineBreaks = originalStringRepresentation.replaceAll("\n", "");
+		Assert.assertEquals(expectedWithNoLineBreaks, realWithNoLineBreaks);
+	
+		Assert.assertEquals(sb.toString(), originalStringRepresentation);
+		
+	}
+
 
 	@Test
 	public void parsedCheckedTest() throws Exception {
 		
 		PgnGameSuite pgnGamesOriginal = PgnGame.parse(getClass().getResourceAsStream(path));
 		
-		
-		
 		if(expectedValues.numberOfGamesInsuite != null) {
-			Assert.assertEquals(expectedValues.numberOfGamesInsuite.intValue(), pgnGamesOriginal.games.size());
+			Assert.assertEquals(expectedValues.numberOfGamesInsuite.intValue(), pgnGamesOriginal.pgnGames.size());
 			System.out.println("Expected number of games: " + expectedValues.numberOfGamesInsuite);
 		}
 		
 		for(Map.Entry<Integer, ExpectedValuesForGame> entry : expectedValues.expectedValuesForGames.entrySet()) {
-			PgnGame pgnGame = pgnGamesOriginal.games.get(entry.getKey());
+			PgnGame pgnGame = pgnGamesOriginal.pgnGames.get(entry.getKey());
 			ExpectedValuesForGame expectedValuesForGame = entry.getValue();				
 			assertExpectedValuesForGame(expectedValuesForGame, pgnGame);				
-		}
-		
-		
+		}		
 		
 	}
 	
+	@Test
+	public void formatParseFormat() throws Exception {
+		
+		PgnGameSuite pgnGamesOriginal = PgnGame.parse(getClass().getResourceAsStream(path));
+		
+		StringWriter stringWriter = new StringWriter();
+		pgnGamesOriginal.write(stringWriter);		
+		String originalStringRepresentation = stringWriter.toString();
+		
+		
+		InputStream istream = new ByteArrayInputStream(originalStringRepresentation.getBytes());
+		
+		PgnGameSuite pgnGamesCopy = PgnGame.parse(istream);
+
+		StringWriter copyWriter = new StringWriter();
+		pgnGamesCopy.write(copyWriter);		
+		String copyStringRepresentation = copyWriter.toString();
+		
+		Assert.assertEquals(originalStringRepresentation, copyStringRepresentation);
+
+		
+	}
 	
 	private void assertExpectedValuesForGame(ExpectedValuesForGame expectedValuesForGame, PgnGame pgnGame) {
 		
@@ -151,46 +221,23 @@ public class PgnGameTest {
 	}
 
 	
+
 	
-	@Test
-	public void parsedFormatParsed() throws Exception {
+	private StringBuilder inputStreamAsStringBuilder(InputStream input) throws IOException {
+		StringBuilder ret = new StringBuilder();
 		
-		PgnGameSuite pgnGamesOriginal = PgnGame.parse(getClass().getResourceAsStream(path));
-
 		
-		StringWriter stringWriter = new StringWriter();
-
-		pgnGamesOriginal.write(stringWriter);		
-		String stringRepresentation = stringWriter.toString();		
-		InputStream istream = new ByteArrayInputStream(stringRepresentation.getBytes());
+		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(input)); 
+		String line = null;
+		while((line = bufferedReader.readLine()) != null) {
+			ret.append(line);
+			ret.append(LINE_SEPARATOR);
+		}	
 		
-		PgnGameSuite pgnGamesCopy = PgnGame.parse(istream);
+		IOUtils.closeQuietly(input);
 		
-		Assert.assertEquals(pgnGamesOriginal.games, pgnGamesCopy.games);
-		
+		return ret;
 	}
 	
-	
-	@Test
-	public void formatParseFormat() throws Exception {
-		
-		PgnGameSuite pgnGamesOriginal = PgnGame.parse(getClass().getResourceAsStream(path));
-		
-		StringWriter stringWriter = new StringWriter();
-		pgnGamesOriginal.write(stringWriter);		
-		String originalStringRepresentation = stringWriter.toString();
-		
-		InputStream istream = new ByteArrayInputStream(originalStringRepresentation.getBytes());
-		
-		PgnGameSuite pgnGamesCopy = PgnGame.parse(istream);
-
-		StringWriter copyWriter = new StringWriter();
-		pgnGamesCopy.write(copyWriter);		
-		String copyStringRepresentation = copyWriter.toString();
-		
-		Assert.assertEquals(originalStringRepresentation, copyStringRepresentation);
-		
-	}
-
 	
 }

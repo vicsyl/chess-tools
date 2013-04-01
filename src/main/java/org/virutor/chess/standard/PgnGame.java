@@ -13,22 +13,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.virutor.chess.model.Game;
 import org.virutor.chess.model.Game.Result;
 import org.virutor.chess.model.Game.ResultExplanation;
-import org.virutor.chess.model.Position.Continuation;
-import org.virutor.chess.model.Move;
+import org.virutor.chess.model.GameNode;
 import org.virutor.chess.model.Position;
 
 /**
@@ -43,8 +40,6 @@ public class PgnGame {
 	static final Map<String, Game.Result> STRING_RESULTS = new HashMap<String, Game.Result>();
 	static final Map<Result, String> RESULT_STRING = new HashMap<Game.Result, String>();
 
-	
-
 
 	static interface PropertyHandler {
 		void parse(String key, String value, PgnGame pgnGame);
@@ -53,8 +48,7 @@ public class PgnGame {
 	}
 	
 	private static final Map<String, PropertyHandler> PROPERTY_HANDLERS = new HashMap<String, PgnGame.PropertyHandler>();
-	private static final Set<String> SEVEN_TAG_ROOSTER_PROPERTY_NAMES = new HashSet<String>();
-
+	public static final List<String> SEVEN_TAG_ROOSTER_PROPERTY_NAMES;
 
 	public static final String PROPERTY_EVENT = "Event";
 	public static final String PROPERTY_SITE = "Site";
@@ -68,42 +62,18 @@ public class PgnGame {
 
 	static {
 
-		/*
-		SEVEN_TAG_ROSTER.put(PROPERTY_EVENT, String.class);
-		SEVEN_TAG_ROSTER.put(PROPERTY_SITE, String.class);
-		SEVEN_TAG_ROSTER.put(PROPERTY_DATE, Date.class);
-		SEVEN_TAG_ROSTER.put(PROPERTY_ROUND, Integer.class);
-		SEVEN_TAG_ROSTER.put(PROPERTY_BLACK , String.class);
-		SEVEN_TAG_ROSTER.put(PROPERTY_WHITE, String.class);
-		SEVEN_TAG_ROSTER.put(PROPERTY_RESULT, Result.class);
-	*/
+		List<String> sevenTagRooster = new ArrayList<String>();
 		
-		//private static final Map<String, Class<?>> KNOWN_TYPES_PROPERTIES = new HashMap<String, Class<?>>();
-		/*
-		KNOWN_TYPES_PROPERTIES.put(PROPERTY_EVENT, String.class);
-		KNOWN_TYPES_PROPERTIES.put(PROPERTY_SITE, String.class);
-
-		//TODO
-		KNOWN_TYPES_PROPERTIES.put(PROPERTY_DATE, String.class);
-		
-		//TODO
-		KNOWN_TYPES_PROPERTIES.put(PROPERTY_ROUND, String.class);
-		
-		KNOWN_TYPES_PROPERTIES.put(PROPERTY_BLACK , String.class);
-		KNOWN_TYPES_PROPERTIES.put(PROPERTY_WHITE, String.class);
-		
-		
-		KNOWN_TYPES_PROPERTIES.put(PROPERTY_RESULT, String.class);
-		*/
-		
-		SEVEN_TAG_ROOSTER_PROPERTY_NAMES.addAll(Arrays.asList(				
-				PROPERTY_BLACK,
-				PROPERTY_DATE,
+		sevenTagRooster.addAll(Arrays.asList(				
 				PROPERTY_EVENT,
-				PROPERTY_RESULT,
-				PROPERTY_ROUND,
 				PROPERTY_SITE,
-				PROPERTY_WHITE));
+				PROPERTY_DATE,
+				PROPERTY_ROUND,
+				PROPERTY_WHITE,
+				PROPERTY_BLACK,
+				PROPERTY_RESULT));
+		
+		SEVEN_TAG_ROOSTER_PROPERTY_NAMES = Collections.unmodifiableList(sevenTagRooster);
 		
 		STRING_RESULTS.put("1-0", Game.Result.WHITE_WINS);
 		STRING_RESULTS.put("0-1", Game.Result.BLACK_WINS);
@@ -115,21 +85,22 @@ public class PgnGame {
 		RESULT_STRING.put(Result.DRAW, "1/2-1/2");
 		RESULT_STRING.put(Result.UNRESOLVED, "*");
 		
-		PROPERTY_HANDLERS.put(PROPERTY_RESULT, new ResultHandler());
+		PROPERTY_HANDLERS.put(PROPERTY_RESULT, ResultHandler.INSTANCE);
 		PROPERTY_HANDLERS.put(PROPERTY_DATE, new DateHandler());
 		PROPERTY_HANDLERS.put(PROPERTY_ROUND, new PgnRoundHandler());
 	}
 	
-
-	final Game game;
-	
-	Map<String, Object> properties = new HashMap<String, Object>();
+	private Game game;
+	private Map<String, Object> properties = new HashMap<String, Object>();
 	
 	//seven tag rooster
-	PgnDate pgnDate; 
-	PgnRound pgnRound;
+	private PgnDate pgnDate; 
+	private PgnRound pgnRound;
 	//result delegated to game.result
 	
+	public void setGame(Game game) {
+		this.game = game;
+	}
 
 	
 	public PgnRound getPgnRound() {
@@ -147,20 +118,15 @@ public class PgnGame {
 	
 	public static PgnGameSuite parse(InputStream istream) throws IOException {
 		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(istream));
-		return parse(bufferedReader);		
+		PgnGameSuite ret = parse(bufferedReader);
+		IOUtils.closeQuietly(istream);
+		return ret;
 	}
-	
-	
-	/*
-	public static PgnGame parse(String string) throws IOException {		
-		BufferedReader bufferedReader = new BufferedReader(new StringReader(string));		
-		return parse(bufferedReader);
-	}*/
 	
 	private static PgnGameSuite parse(BufferedReader bufferedReader) throws IOException {
 	
 		PgnGameSuite ret = new PgnGameSuite();
-		while(!parse(bufferedReader, ret.games)) {
+		while(!parse(bufferedReader, ret.pgnGames)) {
 			//TODO check??
 		}
 		return ret;
@@ -176,7 +142,6 @@ public class PgnGame {
 	 * @throws IOException
 	 */
 	private static boolean parse(BufferedReader bufferedReader, List<PgnGame> games) throws IOException {
-
 		
 		String line = null;
 
@@ -209,98 +174,39 @@ public class PgnGame {
 			return true;
 		}
 		
-		toAdd.assertAllSevenTagsPresent();
-				
+		toAdd.assertAllSevenTagsPresent();				
 		
 		StringBuilder movesStringBuilder = new StringBuilder();
+
+		//skip new lines between properties and moves
+		while((line = bufferedReader.readLine()) != null) {			
+			if(!StringUtils.isBlank(line)) {
+				break;
+			}
+		}
+		if(line == null) {
+			return true;
+		}
 		
-		//no blank line between properties and moves
 		if(!StringUtils.isBlank(line)) {
 			movesStringBuilder.append(line);
 		}
-					
-		isFirstBlankSection = true;
+			
 		while((line = bufferedReader.readLine()) != null) {
-			
 			if(StringUtils.isBlank(line)) {
-				if(isFirstBlankSection) {
-					continue;
-				} else {
-					break;
-				}
-			} else {
-				isFirstBlankSection = false;
+				break;
 			}
-			
-			//TODO really??
-			movesStringBuilder.append(line + " ");
+			if(movesStringBuilder.length() > 0) {
+				movesStringBuilder.append("\n");
+			}
+			movesStringBuilder.append(line);
 		}
 		
-		String movesString = movesStringBuilder.toString(); 
-		if(StringUtils.isBlank(movesString)) {
-			throw new IllegalArgumentException("no moves in pgn source");
-		}
-
-	
-		//TODO use stack
-		List<String> words = new LinkedList<String>(Arrays.asList(movesString.split("\\s+")));
-	
-
-		while(!words.isEmpty()) {
-			
-			String current = words.remove(0);
-
-			//skipping periods
-			int i = current.indexOf(".");
-			if(i == 0) {
-				while(i < current.length() && current.charAt(i) == '.') {
-					i++;
-				}
-				if(i < current.length()) {
-					words.add(0, current.substring(i));
-				}
-				continue;
-			} else if(i > 0) {
-				words.add(0, current.substring(i));
-				current = current.substring(0, i);
-			} 
-
-			//TODO starts with??
-			if(STRING_RESULTS.containsKey(current)) {
-				//skip, should be already present in seven tag rooster
-				continue;
-			}
-			
-			if(Character.isDigit(current.charAt(0))) {
-				
-				i = 1;
-				while(i < current.length() && Character.isDigit(current.charAt(i))) {
-					i++;
-				}
-				if(i < current.length()) {
-					words.add(current.substring(i));
-				}
-				continue;
-				
-			}			
-			
-			Move move = SanMove.parse(current, game.getLastPosition(), game.getLastGeneratedMoves());
-			game.doMove(move);
-						
-			if(game.getLastPosition().getContinuation() == Continuation.CHECK_MATE) {
-				game.setResultExplanation(ResultExplanation.MATE);
-			} else if(game.getLastPosition().getContinuation() == Continuation.STALEMATE) {
-				game.setResultExplanation(ResultExplanation.STALE_MATE);
-			}
-		}
 		
-	
-
+		MoveTextParser moveTextParser = new MoveTextParser(movesStringBuilder, game);
+		moveTextParser.parse();
 		games.add(toAdd);
-		
-
-		return false;
-		
+		return false;		
 	}
 	
 	
@@ -351,6 +257,7 @@ public class PgnGame {
 		
 	}
 	
+	
 	public String format() {
 
 		assertAllSevenTagsPresent();
@@ -373,23 +280,98 @@ public class PgnGame {
 		
 		stringBuilder.append("\n");
 		
-		List<Move> moves = game.getMoves();		
-		List<Position> positions = game.getPositions();		
-		for(int i = 0; i < moves.size(); i++) {
-			if(positions.get(i).colorToMove == Position.COLOR_WHITE) {
-				stringBuilder.append("" + (i/2 + 1) + ".");
-			}
-			
-			/*Move mT = moves.get(i);
-			if((mT.from == Position.B6 || mT.from == Position.B8) && mT.to == Position.D7 && mT.piece_moved == Piece.PIECE_KNIGHT) {
-				String t = "";
-			}*/
-			
-			SanMove san = new SanMove(moves.get(i), positions.get(i), game.getGeneratedMovesList().get(i));
-			stringBuilder.append(san.toString() + " ");			
-		} 
+		appendMoveText(stringBuilder, game.getHeadGameNode(), true);
+		
+		stringBuilder.append(ResultHandler.INSTANCE.format(PROPERTY_RESULT, this));
 		
 		return stringBuilder.toString();
+	}
+	
+	
+
+	public void appendMoveText(StringBuilder stringBuilder, GameNode startingNode, boolean breakLines) {
+		appendMoveText(stringBuilder, startingNode, breakLines, null);
+	}
+	
+	
+	public void appendMoveText(StringBuilder stringBuilder, GameNode startingNode, boolean breakLines, FormatNodeListener formatNodeListener) {
+		
+		GameNode gameNode = startingNode;
+		
+		boolean placeBlackOrdinal = false;
+		
+		while(gameNode.getNextMove() != null) {
+			
+			boolean blackToMove = gameNode.getPosition().colorToMove == Position.COLOR_BLACK;
+			
+			if(gameNode.getComment() != null) {
+				stringBuilder.append("{" + gameNode.getComment() + "} ");
+				placeBlackOrdinal = placeBlackOrdinal || blackToMove;
+			}
+			
+			placeBlackOrdinal = placeBlackOrdinal || (gameNode == startingNode && blackToMove); 
+			
+			if(!blackToMove) {
+			
+				if(gameNode != startingNode && breakLines) {
+					//TODO rather System.getProperty("line.seperator"); ??
+					stringBuilder.append("\n");
+				}
+				
+				if(formatNodeListener != null) {
+					formatNodeListener.beforeNode(stringBuilder);
+				}				
+				stringBuilder.append("" + gameNode.getOrdinalNumber() + ".");
+			
+			} else {
+				if(formatNodeListener != null) {
+					formatNodeListener.beforeNode(stringBuilder);
+				}			
+				if(placeBlackOrdinal) {
+					stringBuilder.append("" + gameNode.getOrdinalNumber() + "...");
+					placeBlackOrdinal = false;
+				}
+				
+			}
+			
+			//TODO what about SanMove(GameNode n) ??!!
+			SanMove san = new SanMove(gameNode.getNextMove(), gameNode.getPosition(), gameNode.getGeneratedMoves());
+			stringBuilder.append(san.toString() + " ");
+			
+			if(formatNodeListener != null) {
+				formatNodeListener.afterNode(stringBuilder, gameNode.getNext());
+			}	
+			
+			
+			if(!CollectionUtils.isEmpty(gameNode.getVariations())) {
+				handleVariation(stringBuilder, gameNode, formatNodeListener);
+				placeBlackOrdinal = !blackToMove;
+			}
+			
+			
+			gameNode = gameNode.getNext();
+				
+		}
+	}
+	
+	private void handleVariation(StringBuilder stringBuilder, GameNode startingGameNode, FormatNodeListener formatNodeListener) {
+		
+		stringBuilder.append("(");
+		
+		boolean firstFlag = true;
+		for(GameNode gameNode : startingGameNode.getVariations()) {
+			if(firstFlag) {
+				firstFlag = false;
+			} else {
+				//TODO experimental!!! #implementation #standard
+				stringBuilder.append("; "); 
+				LOG.debug("Don't know yet how to handle multiple variations from one node at once - see the standard");
+			}
+			appendMoveText(stringBuilder, gameNode, false, formatNodeListener);			
+		}
+		
+		stringBuilder.append(") ");
+		
 	}
 	
 	public String getEvent() {
@@ -459,14 +441,13 @@ public class PgnGame {
 	public Game getGame() {
 		return game;
 	}
-
+	
 
 	public Map<String, Object> getProperties() {
 		return Collections.unmodifiableMap(properties);
 	}
 
 	public void setProperty(String key, String value) {
-		
 		
 		if(PROPERTY_HANDLERS.containsKey(key)) {
 			PROPERTY_HANDLERS.get(key).parse(key, value, this);

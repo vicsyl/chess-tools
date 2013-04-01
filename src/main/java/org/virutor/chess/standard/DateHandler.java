@@ -12,7 +12,7 @@ public class DateHandler implements PropertyHandler {
 	@Override
 	public String format(String key, PgnGame pgnGame) {
 		//TODO assert key
-		return pgnGame.pgnDate.toString();
+		return pgnGame.getDate().toString();
 	}
 
 }

@@ -7,16 +7,16 @@ import java.util.List;
 
 public class PgnGameSuite {
 
-	public List<PgnGame> games = new ArrayList<PgnGame>();
+	public List<PgnGame> pgnGames = new ArrayList<PgnGame>();
 	
 	public String toString() {		
-		return games.toString();		
+		return pgnGames.toString();		
 	}	
 	
 	public void write(Writer writer) throws IOException {
-		for(int i = 0; i < games.size(); i++) {			
-			writer.append(games.get(i).format());
-			if(i < games.size() - 1) {
+		for(int i = 0; i < pgnGames.size(); i++) {			
+			writer.append(pgnGames.get(i).format());
+			if(i < pgnGames.size() - 1) {
 				writer.append("\n\n");
 			}
 		}

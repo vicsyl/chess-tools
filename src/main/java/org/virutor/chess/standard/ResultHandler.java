@@ -8,6 +8,14 @@ import org.virutor.chess.standard.PgnGame.PropertyHandler;
 public class ResultHandler implements PropertyHandler {
 
 	private static final Logger LOG = Logger.getLogger(ResultHandler.class); 
+
+	public static final ResultHandler INSTANCE = new ResultHandler();		
+	
+	private ResultHandler() {}
+	
+	public static String format(Result result) {
+		return PgnGame.RESULT_STRING.get(result);
+	}
 	
 	@Override
 	public void parse(String key, String value, PgnGame pgnGame) {
@@ -20,17 +28,15 @@ public class ResultHandler implements PropertyHandler {
 			return;
 		}
 		Game.Result result = PgnGame.STRING_RESULTS.get(value);
-		pgnGame.game.setResult(result);
-		pgnGame.properties.put(key, result);
+		pgnGame.getGame().setResult(result);
+		pgnGame.getProperties().put(key, result);
 		
 		
 	}
 
 	@Override
 	public String format(String key, PgnGame pgnGame) {
-		
-		Result result = pgnGame.game.getResult();
-		return PgnGame.RESULT_STRING.get(result);
+		return format(pgnGame.getGame().getResult());
 	}
 		
 }

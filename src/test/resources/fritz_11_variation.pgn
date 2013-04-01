@@ -1,0 +1,20 @@
+[Event "Blitz:4'+2""]
+[Site "?"]
+[Date "2013.??.30"]
+[Round "?.1"]
+[White "Deep Fritz 12"]
+[Black "vaclav"]
+[Result "*"]
+[ECO "C20"]
+[Annotator ",vaclav"]
+[PlyCount "63"]
+[TimeControl "240+2"]
+
+{531MB, Fritz11.ctg} 1. e4 e5 2. Be2 Nc6 3. c3 Nf6 4. d3 d5 5. exd5 Nxd5 6. h4
+Be7 7. h5 h6 8. Nd2 Nf4 9. g3 Nxd3+ 10. Bxd3 Qxd3 (10... Na5 {[%emt 0:00:00]}
+11. Ne4 {[%emt 0:00:00]}) 11. Qf3 Qxf3 12. Ndxf3 Bg4 13. Be3 O-O-O 14. Nd2 Bg5
+15. Ngf3 Bxe3 16. fxe3 Rd3 17. Kf2 Rhd8 18. Nc4 f6 19. Rh4 Be6 20. a4 Rd1 21.
+Ra3 Rb1 22. b4 Ne7 23. Nfd2 Rc1 24. e4 Rd3 25. Ke2 Bxc4 26. Nxc4 Rdxc3 27. Rxc3
+Rxc3 28. Ne3 Nc6 29. Rg4 Nd4+ (29... Rb3 30. Rxg7 Rxb4 31. Nd5 Nd4+ 32. Kf2
+Rxa4 33. Rxc7+ Kb8) 30. Kf2 Rb3 31. Rxg7 (31. Nd5) 31... Rxb4 32. Nd5 *
+

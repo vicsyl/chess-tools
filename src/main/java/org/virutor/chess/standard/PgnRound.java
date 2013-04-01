@@ -4,7 +4,8 @@ import java.util.regex.Pattern;
 
 public class PgnRound {
 	
-	private static final String PATTERN_STRING = "\\?|-|\\d+(\\.\\d+)*";
+	//TODO test it #test
+	private static final String PATTERN_STRING = "^\\?|^-|^[\\d+\\?](\\.[\\d+\\?])*";
 	private static final Pattern PATTERN = Pattern.compile(PATTERN_STRING);
 
 	public static PgnRound UNKNOWN = new PgnRound("?");
