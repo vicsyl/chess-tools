@@ -27,6 +27,8 @@ import org.virutor.chess.model.Game.Result;
 import org.virutor.chess.model.Game.ResultExplanation;
 import org.virutor.chess.model.GameNode;
 import org.virutor.chess.model.Position;
+import org.virutor.chess.model.ui.GameData;
+import org.virutor.chess.standard.time.TimeControl;
 
 /**
  * TODO check Game for not null 
@@ -41,13 +43,9 @@ public class PgnGame {
 	static final Map<Result, String> RESULT_STRING = new HashMap<Game.Result, String>();
 
 
-	static interface PropertyHandler {
-		void parse(String key, String value, PgnGame pgnGame);
-		String format(String key, PgnGame pgnGame);
-		
-	}
 	
-	private static final Map<String, PropertyHandler> PROPERTY_HANDLERS = new HashMap<String, PgnGame.PropertyHandler>();
+	
+	private static final Map<String, PropertyHandler> PROPERTY_HANDLERS = new HashMap<String, PropertyHandler>();
 	public static final List<String> SEVEN_TAG_ROOSTER_PROPERTY_NAMES;
 
 	public static final String PROPERTY_EVENT = "Event";
@@ -85,13 +83,17 @@ public class PgnGame {
 		RESULT_STRING.put(Result.DRAW, "1/2-1/2");
 		RESULT_STRING.put(Result.UNRESOLVED, "*");
 		
+		PROPERTY_HANDLERS.put(PgnTimeControlHandler.TIME_CONTROL, PgnTimeControlHandler.INSTANCE);
 		PROPERTY_HANDLERS.put(PROPERTY_RESULT, ResultHandler.INSTANCE);
 		PROPERTY_HANDLERS.put(PROPERTY_DATE, new DateHandler());
 		PROPERTY_HANDLERS.put(PROPERTY_ROUND, new PgnRoundHandler());
+		PROPERTY_HANDLERS.put(SetUpHandler.SET_UP, SetUpHandler.INSTANCE);
+		PROPERTY_HANDLERS.put(FenPropertyHandler.FEN, FenPropertyHandler.INSTANCE);
 	}
 	
 	private Game game;
-	private Map<String, Object> properties = new HashMap<String, Object>();
+	private GameData gameData;
+	Map<String, Object> properties = new HashMap<String, Object>();
 	
 	//seven tag rooster
 	private PgnDate pgnDate; 
@@ -166,7 +168,7 @@ public class PgnGame {
 			}
 			String key = matcher.group(1);
 			String value = matcher.group(2);
-			toAdd.setProperty(key, value);
+			toAdd.setStringProperty(key, value);
 			
 		}
 		
@@ -201,12 +203,26 @@ public class PgnGame {
 			}
 			movesStringBuilder.append(line);
 		}
-		
+
+		toAdd.fillGameData();
 		
 		MoveTextParser moveTextParser = new MoveTextParser(movesStringBuilder, game);
 		moveTextParser.parse();
+		
 		games.add(toAdd);
 		return false;		
+	}
+	
+	private void fillGameData() {
+		gameData.setWhite((String)properties.get(PROPERTY_WHITE));
+		gameData.setBlack((String)properties.get(PROPERTY_BLACK));
+
+		//TODO one time control only 
+		List<TimeControl> timeControls = (List<TimeControl>)properties.get(PgnTimeControlHandler.TIME_CONTROL);
+		if(timeControls != null) {
+			gameData.setTimeControls(timeControls);	
+		}
+		
 	}
 	
 	
@@ -219,15 +235,14 @@ public class PgnGame {
 		
 		if(PROPERTY_HANDLERS.containsKey(key)) {
 			PropertyHandler propertyHandler = PROPERTY_HANDLERS.get(key);
-			String stringValue = propertyHandler.format(key, this);
-			appendProperty(key, stringValue, sb);
+			propertyHandler.format(key, this, sb);			
 		} else {
 			appendProperty(key, properties.get(key), sb);
 		}
 	}
 	
 	
-	private void appendProperty(String key, Object value, StringBuilder stringBuilder) {
+	void appendProperty(String key, Object value, StringBuilder stringBuilder) {
 		stringBuilder.append("[" + key + " \"" + value + "\"]\n");
 	}
 	
@@ -262,6 +277,11 @@ public class PgnGame {
 
 		assertAllSevenTagsPresent();
 		
+		//TODO not in proper order!!!! #implementation
+		for(PropertyHandler propertyHandler : PROPERTY_HANDLERS.values()) {
+			propertyHandler.chechBeforeParse(this);
+		}
+		
 		if(game == null) {
 			throw new IllegalStateException("Game not set");
 		}
@@ -282,7 +302,9 @@ public class PgnGame {
 		
 		appendMoveText(stringBuilder, game.getHeadGameNode(), true);
 		
-		stringBuilder.append(ResultHandler.INSTANCE.format(PROPERTY_RESULT, this));
+		
+		//TODO use something else!!!
+		stringBuilder.append(ResultHandler.format(this));
 		
 		return stringBuilder.toString();
 	}
@@ -339,7 +361,7 @@ public class PgnGame {
 			stringBuilder.append(san.toString() + " ");
 			
 			if(formatNodeListener != null) {
-				formatNodeListener.afterNode(stringBuilder, gameNode.getNext());
+				formatNodeListener.afterNode(stringBuilder, gameNode);
 			}	
 			
 			
@@ -352,6 +374,11 @@ public class PgnGame {
 			gameNode = gameNode.getNext();
 				
 		}
+		
+		if(gameNode.getComment() != null) {
+			stringBuilder.append("{" + gameNode.getComment() + "} ");			
+		}
+		
 	}
 	
 	private void handleVariation(StringBuilder stringBuilder, GameNode startingGameNode, FormatNodeListener formatNodeListener) {
@@ -441,13 +468,21 @@ public class PgnGame {
 	public Game getGame() {
 		return game;
 	}
-	
+
+	public GameData getGameData() {
+		return gameData;
+	}
+
+	public void setGameData(GameData gameData) {
+		this.gameData = gameData;
+	}
+
 
 	public Map<String, Object> getProperties() {
 		return Collections.unmodifiableMap(properties);
 	}
 
-	public void setProperty(String key, String value) {
+	public void setStringProperty(String key, String value) {
 		
 		if(PROPERTY_HANDLERS.containsKey(key)) {
 			PROPERTY_HANDLERS.get(key).parse(key, value, this);

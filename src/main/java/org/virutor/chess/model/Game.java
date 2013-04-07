@@ -29,19 +29,28 @@ public class Game {
 		
 	private Result result = Result.UNRESOLVED;
 	private ResultExplanation resultExplanation = null;
-	private GameNode headGameNode = new GameNode();
-	private GameNode currentGameNode = headGameNode;
+	private GameNode headGameNode;
+	private GameNode currentGameNode;
 
 	public static Game newGameFromStartingPosition() {
 		return new Game(Position.getStartPosition());
 	}
 	
 	public Game(Position startingPosition) {
-		headGameNode.position = startingPosition;
-		headGameNode.generatedMoves = MoveGenerator.generateMoves(startingPosition);
-		// really??
-		headGameNode.ordinalNumber = 1;		
+		setUpStartingPosition(startingPosition);
 	}	
+	
+	public void setUpStartingPosition(Position position) {
+		
+		headGameNode = new GameNode();
+		currentGameNode = headGameNode;
+		
+		headGameNode.position = position;
+		headGameNode.generatedMoves = MoveGenerator.generateMoves(position);
+		// really??
+		headGameNode.ordinalNumber = position.fullMoveClock; 
+		
+	}
 	
 	public Result getResult() {
 		return result;
@@ -106,6 +115,10 @@ public class Game {
 		return headGameNode;
 	}
 
+	public Position getCurrentPosition() {
+		return currentGameNode.getPosition();
+	}
+	
 	public GameNode getCurrentGameNode() {
 		return currentGameNode;
 	}

@@ -1,6 +1,5 @@
 package org.virutor.chess.standard;
 
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -9,7 +8,6 @@ import org.virutor.chess.model.Game;
 import org.virutor.chess.model.Game.ResultExplanation;
 import org.virutor.chess.model.GameNode;
 import org.virutor.chess.model.Move;
-import org.virutor.chess.model.Position;
 import org.virutor.chess.model.Position.Continuation;
 
 public class MoveTextParser {
@@ -17,9 +15,7 @@ public class MoveTextParser {
 	private static final Logger LOG = Logger.getLogger(MoveTextParser.class); 
 	
 	private static final Pattern PATTERN_WORD = Pattern.compile("^\\S+");
-	private static final Pattern PATTERN_WHITESPACE = Pattern.compile("^\\s+");
-
-	
+	private static final Pattern PATTERN_WHITESPACE = Pattern.compile("^\\s+");	
 
 	private StringBuilder stringBuilder;
 	private Game game;
@@ -110,92 +106,10 @@ public class MoveTextParser {
 				game.setResultExplanation(ResultExplanation.MATE);
 			} else if(continuation == Continuation.STALEMATE) {
 				game.setResultExplanation(ResultExplanation.STALE_MATE);
-			}
-	
-		}
-		
-		
-		
-	}
-
-	/*
-	private void parse(StringBuilder stringBuilder) {
-
-		
-		while(stringBuilder.length() > 0) {
-			
-			Matcher whiteSpaceMacther = PATTERN_WHITESPACE.matcher(stringBuilder);
-			if(whiteSpaceMacther.find()) {
-				stringBuilder.delete(0,whiteSpaceMacther.group().length());
-			}		
-			
-			Matcher matcher = PATTERN_WORD.matcher(stringBuilder);	
-			if(!matcher.find()) {
-				break;
-			}
-			
-			String word = matcher.group();
-	
-			StringBuilder comment = getComment(stringBuilder);		
-			if(comment != null) {
-				LOG.debug("Comment : " + comment);
-				game.addComment(game.getLastPosition(), comment.toString());
-				continue;
-			}
-			
-			StringBuilder variationStringBuilder = getVariation(stringBuilder);
-			if(variationStringBuilder != null) {
-				
-				List<Position> positions = game.getPositions();				
-				Game variation = new Game(positions.get(positions.size()-2));
-				MoveTextParser variationMoveTestParser = new MoveTextParser(variationStringBuilder, variation);
-				variationMoveTestParser.parse();
-				game.addVariation(variation);
-				
-				//TODO handle comment
-				LOG.debug("Variation : " + variationStringBuilder);
-				continue;
-			}
-			
-			
-	
-			//interesting chars not at the beginning
-			word = biteEnd(word, '(');
-			word = biteEnd(word, '{');
-			word = biteEnd(word, '.');
-			word = biteEnd(word, ';');
-					
-			if(biteStart(word, '.', stringBuilder))  {
-				continue;
-			}
-
-			//bite results must be befor bute digits!!!
-			if(biteResults(word, stringBuilder)) {
-				continue;
-			}
-			if(biteDigit(word, stringBuilder)) {
-				continue;
 			}			
-		
-			//it *must* be a SanMove 
-			//TODO check for exception
-			Move move = SanMove.parse(word, game.getLastPosition(), game.getLastGeneratedMoves());
-			game.doMove(move);
-			stringBuilder.delete(0, word.length());			
-						
-			Continuation continuation = game.getLastPosition().getContinuation(); 
-			if(continuation == Continuation.CHECK_MATE) {
-				game.setResultExplanation(ResultExplanation.MATE);
-			} else if(continuation == Continuation.STALEMATE) {
-				game.setResultExplanation(ResultExplanation.STALE_MATE);
-			}
-	
 		}
 		
-		
-		
 	}
-*/
 	
 	private static boolean biteResults(String str, StringBuilder stringBuilder) {
 		
@@ -282,10 +196,7 @@ public class MoveTextParser {
 				return null;
 		}
 		
-			
-		
 	}
-	
 	
 	private static String biteEnd(String str, char end) {
 		String oneCharString = String.valueOf(end);

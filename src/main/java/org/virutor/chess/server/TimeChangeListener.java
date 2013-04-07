@@ -1,7 +1,10 @@
 package org.virutor.chess.server;
 
+import org.virutor.chess.standard.time.TimeControl;
+
 public interface TimeChangeListener {
 
-	public void timeChanged(long time, byte color);
+	void timeChanged(long time, TimeControl timeControl);
+	void onTimeForfeit(); 
 	
 }

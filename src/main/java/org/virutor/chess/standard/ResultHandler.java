@@ -3,7 +3,6 @@ package org.virutor.chess.standard;
 import org.apache.log4j.Logger;
 import org.virutor.chess.model.Game;
 import org.virutor.chess.model.Game.Result;
-import org.virutor.chess.standard.PgnGame.PropertyHandler;
 
 public class ResultHandler implements PropertyHandler {
 
@@ -29,14 +28,24 @@ public class ResultHandler implements PropertyHandler {
 		}
 		Game.Result result = PgnGame.STRING_RESULTS.get(value);
 		pgnGame.getGame().setResult(result);
-		pgnGame.getProperties().put(key, result);
+		pgnGame.properties.put(key, result);
 		
 		
 	}
 
-	@Override
-	public String format(String key, PgnGame pgnGame) {
+	public static String format(PgnGame pgnGame) {
 		return format(pgnGame.getGame().getResult());
 	}
+	
+	@Override
+	public void format(String key, PgnGame pgnGame, StringBuilder sb) {		
+		pgnGame.appendProperty(key, format(pgnGame), sb);
+	}
+
+	@Override
+	public void chechBeforeParse(PgnGame pgnGame) {
+		// TODO !!!! 
 		
+	} 
+
 }

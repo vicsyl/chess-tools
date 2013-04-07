@@ -264,6 +264,8 @@ public class Position implements Cloneable {
 
 		colorToMove = COLOR_WHITE;
 		
+		fullMoveClock = 1;
+		
 		return this;
 	}
 	

@@ -1,6 +1,5 @@
 package org.virutor.chess.standard;
 
-import org.virutor.chess.standard.PgnGame.PropertyHandler;
 
 public class PgnRoundHandler implements PropertyHandler {
 
@@ -10,8 +9,11 @@ public class PgnRoundHandler implements PropertyHandler {
 	}
 
 	@Override
-	public String format(String key, PgnGame pgnGame) {
-		return pgnGame.getPgnRound().toString();
+	public void format(String key, PgnGame pgnGame, StringBuilder sb) {
+		pgnGame.appendProperty(key,pgnGame.getPgnRound().toString(), sb);
 	}
+
+	@Override
+	public void chechBeforeParse(PgnGame pgnGame) {	} 
 
 }

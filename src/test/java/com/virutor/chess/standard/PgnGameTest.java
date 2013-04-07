@@ -91,6 +91,8 @@ public class PgnGameTest {
 		
 		ret.add(new Object[] {"/sample_pgn.pgn", new ExpectedValues()});
 		ret.add(new Object[] {"/fritz_11_variation.pgn", new ExpectedValues()});
+		ret.add(new Object[] {"/arena_not_starting_position.pgn", new ExpectedValues()});
+		
 		
 		return ret;
 
@@ -141,7 +143,7 @@ public class PgnGameTest {
 		StringWriter stringWriter = new StringWriter();
 		pgnGamesOriginal.write(stringWriter);		
 		String originalStringRepresentation = stringWriter.toString();		
-		
+		/*
 		String expectedWithNoWhiteSpaces = sb.toString().replaceAll("\\s", "");
 		String realWithNoWhiteSpaces = originalStringRepresentation.replaceAll("\\s", "");
 		Assert.assertEquals(expectedWithNoWhiteSpaces, realWithNoWhiteSpaces);
@@ -149,7 +151,7 @@ public class PgnGameTest {
 		String expectedWithNoLineBreaks = sb.toString().replaceAll("\n", "");
 		String realWithNoLineBreaks = originalStringRepresentation.replaceAll("\n", "");
 		Assert.assertEquals(expectedWithNoLineBreaks, realWithNoLineBreaks);
-	
+		*/
 		Assert.assertEquals(sb.toString(), originalStringRepresentation);
 		
 	}

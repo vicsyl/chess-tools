@@ -4,6 +4,10 @@ pgn game test -> should be able to test for mate, round (unknown), etc.
 CONTINUE: pgn tests
 CONTINUE(?): PlyCount?, TimeControl, Comments!!!!! -> rewrite the parsing to account for comments!!! 
 
+CONTINUE: FEN tag -> failed test and other things (half - full move clock -> also parsing and formating)
+
+
+CONTINUE: things around timer
 
 plan:
 

@@ -1,6 +1,5 @@
 package org.virutor.chess.standard;
 
-import org.virutor.chess.standard.PgnGame.PropertyHandler;
 
 public class DateHandler implements PropertyHandler {
 
@@ -10,9 +9,15 @@ public class DateHandler implements PropertyHandler {
 	}
 
 	@Override
-	public String format(String key, PgnGame pgnGame) {
-		//TODO assert key
-		return pgnGame.getDate().toString();
+	public void format(String key, PgnGame pgnGame, StringBuilder sb) {
+		pgnGame.appendProperty(key, pgnGame.getDate().toString(), sb);
 	}
 
+	@Override
+	public void chechBeforeParse(PgnGame pgnGame) {	
+		
+		//TODO!!!
+	} 
+
+	
 }
