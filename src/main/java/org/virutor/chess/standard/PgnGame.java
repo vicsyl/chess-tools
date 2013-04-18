@@ -55,6 +55,10 @@ public class PgnGame {
 	public static final String PROPERTY_BLACK = "Black";
 	public static final String PROPERTY_WHITE = "White";
 	public static final String PROPERTY_RESULT = "Result";
+	public static final String PROPERTY_WHITE_TYPE = "WhiteType";
+	public static final String PROPERTY_BLACK_TYPE = "BlackType";
+	public static final String PROPERTY_PLAYER_TYPE_HUMAN = "human";
+	public static final String PROPERTY_PLAYER_TYPE_PROGRAM = "program";
 		
 	private static final Pattern PROPERTY_PATTERN = Pattern.compile("\\[\\s*(\\w+)\\s+\"(.*)\"\\]");
 
@@ -214,6 +218,12 @@ public class PgnGame {
 	}
 	
 	private void fillGameData() {
+
+		//TODO rethink
+		if(gameData == null) {
+			gameData = new GameData();
+		}
+		
 		gameData.setWhite((String)properties.get(PROPERTY_WHITE));
 		gameData.setBlack((String)properties.get(PROPERTY_BLACK));
 
@@ -356,9 +366,7 @@ public class PgnGame {
 				
 			}
 			
-			//TODO what about SanMove(GameNode n) ??!!
-			SanMove san = new SanMove(gameNode.getNextMove(), gameNode.getPosition(), gameNode.getGeneratedMoves());
-			stringBuilder.append(san.toString() + " ");
+			stringBuilder.append(gameNode.getSanMove().toString() + " ");
 			
 			if(formatNodeListener != null) {
 				formatNodeListener.afterNode(stringBuilder, gameNode);
@@ -436,6 +444,21 @@ public class PgnGame {
 		game.setResultExplanation(resultExplanation);
 	}
 
+	public String getWhite() {
+		return (String)properties.get(PROPERTY_WHITE);
+	}
+
+	public void setWhite(String white) {
+		properties.put(PROPERTY_WHITE, white);
+	}
+
+	public String getBlack() {
+		return (String)properties.get(PROPERTY_BLACK);
+	}
+
+	public void setBlack(String black) {
+		properties.put(PROPERTY_BLACK, black);
+	}
 	
 	/*
 	public String getSite() {
@@ -447,21 +470,7 @@ public class PgnGame {
 	}
 
 
-	public String getWhite() {
-		return white;
-	}
 
-	public void setWhite(String white) {
-		this.white = white;
-	}
-
-	public String getBlack() {
-		return black;
-	}
-
-	public void setBlack(String black) {
-		this.black = black;
-	}
 
 	*/
 

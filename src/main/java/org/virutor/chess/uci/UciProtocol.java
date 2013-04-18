@@ -1,9 +1,6 @@
 package org.virutor.chess.uci;
 
-import static org.virutor.chess.uci.UciConstants.ID;
-import static org.virutor.chess.uci.UciConstants.OPTION;
-import static org.virutor.chess.uci.UciConstants.READY_OK;
-import static org.virutor.chess.uci.UciConstants.UCI_OK;
+import static org.virutor.chess.uci.UciConstants.*;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -18,14 +15,14 @@ import org.virutor.chess.model.io.LongAlgebraicMove;
 import org.virutor.chess.uci.GameServerTemp.InvalidMoveException;
 import org.virutor.chess.uci.commands.UciCommand;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 
 
 
 /**
  * 
  * Thread safety: should be thread safe 
+ * 
+ * TODO: a) isolate the process logic (so that it could be used in android)
  * 
  * @author vaclav
  *
@@ -35,8 +32,13 @@ public class UciProtocol {
 	private static final Logger LOG = Logger.getLogger(UciProtocol.class); 
 	
 	private String path;
-	private EngineInfo engineInfo = new EngineInfo();
-	private GameServerTemp gameServer;	
+	private final EngineInfo engineInfo;
+	
+	private GameServerTemp gameServer;
+	private InfoListener infoListener;
+	private UciProtocolListener uciProtocolListener;
+		
+	
 	private Process uciEngineProcess;
 	private BufferedReader bufferedReader;
 	private BufferedWriter bufferedWriter;
@@ -45,14 +47,31 @@ public class UciProtocol {
 	//state 
 	private volatile boolean quit;
 	
-	public UciProtocol(String path, GameServerTemp gameServer) {
+	public UciProtocol(String path, GameServerTemp gameServer, EngineInfo engineInfo) {
 		this.path = path;
 		this.gameServer = gameServer;
+		this.engineInfo = engineInfo;
+	}
+	
+	public UciProtocol(String path, GameServerTemp gameServer) {
+		this(path, gameServer, new EngineInfo());
 	}
 	
 	public UciProtocol(String path) {
-		this(path, null);
+		this(path, null, new EngineInfo());
 	}	
+	
+	public UciProtocol(String path, EngineInfo engineInfo) {
+		this(path, null, engineInfo);
+	}	
+	
+	public InfoListener getInfoListener() {
+		return infoListener;
+	}
+
+	public void setInfoListener(InfoListener infoListener) {
+		this.infoListener = infoListener;
+	}
 
 	public void setGameServer(GameServerTemp gameServer) {
 		this.gameServer = gameServer;
@@ -61,13 +80,14 @@ public class UciProtocol {
 	public EngineInfo getEngineInfo() {
 		return engineInfo;
 	}
+	
+	public UciProtocolListener getUciProtocolListener() {
+		return uciProtocolListener;
+	}
 
-	/*
-	public void setEngineInfo(EngineInfo engineInfo) {
-		this.engineInfo = engineInfo;
-	}*/
-
-
+	public void setUciProtocolListener(UciProtocolListener uciProtocolListener) {
+		this.uciProtocolListener = uciProtocolListener;
+	}
 
 	/**
 	 * Starts the engine synchronously
@@ -76,7 +96,7 @@ public class UciProtocol {
 	 */
 	public void start() throws UciProtocolException {
 		
-		
+		//TODO better exception handling
 		try {
 			
 			uciEngineProcess = Runtime.getRuntime().exec(path);
@@ -86,6 +106,8 @@ public class UciProtocol {
 			throw new UciProtocolException(e);
 		}
 
+		quit = false;
+		
 		OutputStream clientInputStream = uciEngineProcess.getOutputStream();
 		InputStream clientOutputStream = uciEngineProcess.getInputStream();
 		
@@ -105,6 +127,10 @@ public class UciProtocol {
 	}
 
 	public void quit() {
+		//TODO rethink states
+		if(quit) {
+			return;
+		}
 		quit = true;
 		writeCommand(ServerToEngineUciCommand.COMMAND_QUIT);
 		try {
@@ -118,11 +144,6 @@ public class UciProtocol {
 			uciEngineProcess.destroy();			
 		}		 
 	}
-	
-	public void play(LongAlgebraicMove move) {
-		throw new NotImplementedException();
-	}
-	
 	
 	private class ReadWorker implements Runnable { 
 		
@@ -160,16 +181,38 @@ public class UciProtocol {
 		//TODO is uci case-insensitive?
 		String firstWord = words[0].toLowerCase();
 		if(ID.equals(firstWord)) {
+			
 			UciEngineInfoUtils.handleId(engineInfo, words);
 			//TODO notify engine ??
-		} else if(UCI_OK.equals(firstWord)) {					
+			
+		} else if(UCI_OK.equals(firstWord)) {
+			
 			writeCommand(ServerToEngineUciCommand.COMMAND_IS_READY);
+			
 		} else if(OPTION.equals(firstWord)) {
+			
 			UciEngineInfoUtils.handleOptions(engineInfo, words);
-			//TODO notify engine ??			
+			//TODO notify engine ??
+			
 		} else if(READY_OK.equals(firstWord)) {
+			
 			gameServer.notifyReady();	
-		} else {
+			
+		} else if(INFO.equals(firstWord)) {
+			
+			if(infoListener != null) {
+				try {
+					ComputationInfo computationInfo = ComputationInfo.parse(line);
+					infoListener.onInfo(computationInfo);
+				} catch (Exception e) {
+					String i = e.getMessage();
+				}
+				
+			}
+			
+			
+		} else if(BEST_MOVE.equals(firstWord)) {			
+			
 			try {
 				gameServer.play(new LongAlgebraicMove(words[1]));
 			} catch (InvalidMoveException e) {
@@ -203,6 +246,9 @@ public class UciProtocol {
 			try {
 				bufferedWriter.write(command + "\n");
 				bufferedWriter.flush();
+				if(uciProtocolListener != null) {
+					uciProtocolListener.onWriteCommand(command);
+				}
 			} catch (IOException e) {
 				//TODO
 				throw new RuntimeException();
@@ -219,12 +265,18 @@ public class UciProtocol {
 	 */
 	private String readCommand() throws IOException {
 		while(!bufferedReader.ready()) {
+			try {
+				Thread.sleep(0, 10000);
+			} catch (InterruptedException e) { /*ignore*/ }
 			if(quit) {
 				return null;
 			}			
 		}
 		String read = bufferedReader.readLine();
 		LOG.info("<-------" + read);
+		if(uciProtocolListener != null) {
+			uciProtocolListener.onReadCommand(read);
+		}
 		return read;
 	}
 

@@ -1,0 +1,13 @@
+player=Venca z Kunratic
+elo=?
+
+engine=Virutor Chess
+path=./VirutorChess_1.1\bin\VirutorChessUci_1.1.exe
+uci_option_hash=1
+uci
+
+
+engine=Virutor Chess1
+path=./VirutorChess_1.1\bin\VirutorChessUci_1.1.exe
+uci_option_hash=1
+usi

@@ -5,6 +5,7 @@ import org.virutor.chess.model.Piece;
 import org.virutor.chess.model.Position;
 import static org.virutor.chess.model.Position.*;
 
+@Deprecated
 public class UiPosition {
 
 	public ColorPieceType[] pieces = new ColorPieceType[64];

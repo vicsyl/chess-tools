@@ -1,11 +1,28 @@
 package org.virutor.chess.model.io;
 
-import static org.virutor.chess.model.Move.*;
-import static org.virutor.chess.model.Piece.*;
-import static org.virutor.chess.model.Position.*;
+import static org.virutor.chess.model.Move.CASTLE_EP_FLAG_BLACK_0_0;
+import static org.virutor.chess.model.Move.CASTLE_EP_FLAG_BLACK_0_0_0;
+import static org.virutor.chess.model.Move.CASTLE_EP_FLAG_EP;
+import static org.virutor.chess.model.Move.CASTLE_EP_FLAG_NO_CASTLE;
+import static org.virutor.chess.model.Move.CASTLE_EP_FLAG_WHITE_0_0;
+import static org.virutor.chess.model.Move.CASTLE_EP_FLAG_WHITE_0_0_0;
+import static org.virutor.chess.model.Piece.NO_PIECE;
+import static org.virutor.chess.model.Piece.PIECE_BISHOP;
+import static org.virutor.chess.model.Piece.PIECE_KNIGHT;
+import static org.virutor.chess.model.Piece.PIECE_QUEEN;
+import static org.virutor.chess.model.Piece.PIECE_ROOK;
+import static org.virutor.chess.model.Position.C1;
+import static org.virutor.chess.model.Position.C8;
+import static org.virutor.chess.model.Position.E1;
+import static org.virutor.chess.model.Position.E8;
+import static org.virutor.chess.model.Position.G1;
+import static org.virutor.chess.model.Position.G8;
+import static org.virutor.chess.model.Position.OFF_BOARD;
 
 import org.virutor.chess.model.Move;
 import org.virutor.chess.model.Position;
+import org.virutor.chess.model.generator.MoveGenerator;
+import org.virutor.chess.model.generator.MoveGenerator.GeneratedMoves;
 
 
 public class LongAlgebraicMove {
@@ -27,7 +44,7 @@ public class LongAlgebraicMove {
 	}
 
 	public static String getFieldName(int index) {
-		char column = 'A';
+		char column = 'a';
 		column += ((index%10) - 1);
 		char row = '1';
 		row += ((index/10) - 2);
@@ -127,5 +144,21 @@ public class LongAlgebraicMove {
 		return true;
 	}
 	
+	
+	public static Move findMove(LongAlgebraicMove laMove, Position position) {	
+		return findMove(laMove, MoveGenerator.generateMoves(position));
+	}
+		
+	public static Move findMove(LongAlgebraicMove laMove, GeneratedMoves generatedMoves) {
+		
+		for(Move move : generatedMoves.moves) {
+			if(new LongAlgebraicMove(move).equals(laMove)) {									
+				return move;
+			}
+		}
+		
+		return null;
+		
+	}
 	
 }

@@ -12,7 +12,6 @@ import org.virutor.chess.model.Position;
 import org.virutor.chess.model.ui.GameData;
 import org.virutor.chess.standard.time.IncrementalTimeControl;
 import org.virutor.chess.standard.time.MovesInSecondsTimeControl;
-import org.virutor.chess.standard.time.SandClockTimeControl;
 import org.virutor.chess.standard.time.TimeControl;
 import org.virutor.chess.ui.model.UiGame;
 import org.virutor.chess.ui.model.UiGameListener;
@@ -39,6 +38,12 @@ public class TimerController implements UiGameListener {
 		}
 	}
 
+	public long getRemainingTime() {
+		return remainingTime;
+	}
+
+
+
 	private void setRemainingTime() {
 		if (currentTimeControl == null) {
 			return;
@@ -53,7 +58,7 @@ public class TimerController implements UiGameListener {
 	}
 
 	@Override
-	public void onGenericChange(UiGameChange uiGameChange) {
+	public void onGenericChange(UiGameListener.GameChangeType changeType) {
 
 		cancelTimer();
 
@@ -109,7 +114,6 @@ public class TimerController implements UiGameListener {
 		@Override
 		public void run() {
 			long time = lastTimeStarted - System.currentTimeMillis() + remainingTime;
-			System.out.println("Time: " + time);
 			notifyListeners(time);
 			// TODO not accounted for more TimeControls
 			if (time < 0) {

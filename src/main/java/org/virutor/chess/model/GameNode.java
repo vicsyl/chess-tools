@@ -7,6 +7,7 @@ import org.virutor.chess.model.generator.MoveGenerator.GeneratedMoves;
 
 public class GameNode {
 
+		String sanMove;
 		Position position;
 		GeneratedMoves generatedMoves; 
 		Move nextMove;
@@ -41,6 +42,10 @@ public class GameNode {
 
 		}
 		
+		public String getSanMove() {
+			return sanMove;
+		}
+
 		public String getComment() {
 			return comment;
 		}

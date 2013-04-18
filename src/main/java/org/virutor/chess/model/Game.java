@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.virutor.chess.model.generator.MoveGenerator;
+import org.virutor.chess.standard.SanMove;
 
 public class Game {
 
@@ -79,6 +80,10 @@ public class Game {
 			throw new IllegalArgumentException("Cannot do this move");
 		}
 		gameNode.nextMove = move;
+		
+		SanMove san = new SanMove(move, gameNode.position, gameNode.generatedMoves);
+		gameNode.sanMove = san.toString();
+		
 		gameNode.nextPosition = MoveGenerator.doMove(gameNode.position, gameNode.nextMove, gameNode.generatedMoves);
 				
 		GameNode newGameNode = new GameNode();
@@ -88,6 +93,7 @@ public class Game {
 		boolean whiteToMove = newGameNode.position.colorToMove == Position.COLOR_WHITE;
 		newGameNode.ordinalNumber = whiteToMove ? gameNode.ordinalNumber + 1 : gameNode.ordinalNumber;
 		newGameNode.generatedMoves = MoveGenerator.generateMoves(newGameNode.position);
+		
 		newGameNode.previous = gameNode;
 				
 		return newGameNode;		

@@ -34,11 +34,13 @@ public class UciConstants {
 		public static final String WINC = "winc";
 		public static final String BINC = "binc";
 		public static final String MOVESTOGO = "movestogo";
+		public static final String INFINITE = "infinite";
 
 	
 		//read commands == implemented read commands 
+		//TO BE REMOVED
 	public static final List<String> READ_COMMANDS = Arrays.asList(new String[] {
-				ID, UCI_OK, READY_OK, OPTION, BEST_MOVE	
+				ID, UCI_OK, READY_OK, OPTION, BEST_MOVE, INFO	
 		});
 		
 		

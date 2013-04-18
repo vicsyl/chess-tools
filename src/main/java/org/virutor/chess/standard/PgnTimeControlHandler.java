@@ -62,7 +62,7 @@ public class PgnTimeControlHandler extends AbstractKeyCheckingPropertyHandler {
 			}
 			matcher = SUDDEN_DEATH_PATTERN.matcher(value);
 			if(matcher.find()) {
-				return new SuddenDeathTimeControl(Integer.valueOf(matcher.group(1)));
+				return new SuddenDeathTimeControl(Integer.valueOf(matcher.group(0)));
 			}		
 			matcher = INCREMENTAL.matcher(value);
 			if(matcher.find()) {
