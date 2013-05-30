@@ -10,6 +10,7 @@ public class UciEngine extends Player {
 	final String ENGINE_PROPERTY = "engine";
 	
 	final String PATH_PROPERTY = "path";
+	final String IS_UNINSTALLABLE = "isUninstallable";
 	
 	Map<String, String> properties = new HashMap<String, String>();
 	
@@ -30,7 +31,15 @@ public class UciEngine extends Player {
 	public void setPath(String path) {
 		properties.put(PATH_PROPERTY, path);		
 	}
-	
+
+	public boolean isUninstallable() {		
+		String unistallableString = properties.get(IS_UNINSTALLABLE);
+		if(unistallableString == null) {
+			return true;
+		}
+		return Boolean.parseBoolean(unistallableString);
+	}
+
 	public Map<String, String> getProperties() {
 		return Collections.unmodifiableMap(properties);
 	}	

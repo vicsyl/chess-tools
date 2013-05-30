@@ -108,6 +108,11 @@ public class PgnGame {
 		this.game = game;
 	}
 
+	public void setProgramTypePlayer(byte color) {
+		String property = color == Position.COLOR_WHITE ? PROPERTY_WHITE_TYPE : PROPERTY_BLACK_TYPE;
+		setStringProperty(property, PROPERTY_PLAYER_TYPE_PROGRAM);
+	}
+
 	
 	public PgnRound getPgnRound() {
 		return pgnRound;
@@ -256,14 +261,15 @@ public class PgnGame {
 		stringBuilder.append("[" + key + " \"" + value + "\"]\n");
 	}
 	
-	public static void saveToFile(File file, Game game) throws IOException {
+	public static void saveToFile(File file, PgnGame game) throws IOException {
 		
-		PgnGame pgnGame = new PgnGame(game);		
+		//TODO redo !!!!
+		
 		OutputStreamWriter outputStreamWriter = null;
 
 		try {
 			outputStreamWriter = new OutputStreamWriter(new FileOutputStream(file));
-			outputStreamWriter.append(pgnGame.format());
+			outputStreamWriter.append(game.format());
 			
 		} finally {
 			IOUtils.closeQuietly(outputStreamWriter); 

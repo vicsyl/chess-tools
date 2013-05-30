@@ -39,7 +39,15 @@ public class TimerController implements UiGameListener {
 	}
 
 	public long getRemainingTime() {
-		return remainingTime;
+
+		
+		if(lastTimeStarted == 0) {
+			return remainingTime;
+		}
+		
+		//TODO !!!
+		return lastTimeStarted - System.currentTimeMillis() + remainingTime;
+		
 	}
 
 
@@ -67,7 +75,7 @@ public class TimerController implements UiGameListener {
 			iterator = null;
 			currentTimeControl = TimeControl.NO_CONTROL;
 		} else {
-			iterator = UiGame.instance.getGameData().getTimeControls().iterator();
+			iterator = gameData.getTimeControls().iterator();
 			currentTimeControl = iterator.next();
 		}
 		lastTimeStarted = 0;
@@ -144,7 +152,7 @@ public class TimerController implements UiGameListener {
 		if(lastTimeStarted == 0) {
 			return;
 		}
-		remainingTime = lastTimeStarted - System.currentTimeMillis();
+		remainingTime += lastTimeStarted - System.currentTimeMillis();
 
 		if (currentTimeControl instanceof IncrementalTimeControl) {
 			IncrementalTimeControl incrementalTimeControl = (IncrementalTimeControl) currentTimeControl;
@@ -162,12 +170,15 @@ public class TimerController implements UiGameListener {
 			
 			if (movesInSecondsTimeControl.getMoves() == checkAgainst) {
 				
+				//TODO hack against Android chess noncompliance (?)
+							
+				/*
 				if(iterator != null && iterator.hasNext()) {
 					currentTimeControl = iterator.next();					
 				} else {
 					iterator = null;
 					currentTimeControl = TimeControl.NO_CONTROL;					
-				}
+				}*/
 				
 				remainingTime += currentTimeControl.getTotalFirstTime();		
 				notifyListeners(remainingTime);

@@ -120,6 +120,15 @@ public class Game {
 	public GameNode getHeadGameNode() {
 		return headGameNode;
 	}
+	
+	//TODO check for similar idioms throughout code
+	public GameNode getTailGameNode() {
+		GameNode node = headGameNode;
+		while(node.next != null) {
+			node = node.next;
+		}
+		return node;
+	}
 
 	public Position getCurrentPosition() {
 		return currentGameNode.getPosition();

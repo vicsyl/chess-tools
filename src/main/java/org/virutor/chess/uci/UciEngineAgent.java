@@ -7,6 +7,7 @@ import java.util.concurrent.CountDownLatch;
 import org.virutor.chess.model.GameNode;
 import org.virutor.chess.model.Move;
 import org.virutor.chess.model.Position;
+import org.virutor.chess.model.Position.Continuation;
 import org.virutor.chess.model.io.LongAlgebraicMove;
 import org.virutor.chess.uci.commands.PlayCommand;
 import org.virutor.chess.ui.model.UiGame;
@@ -20,27 +21,55 @@ import org.virutor.chess.ui.model.UiGameListener;
  */
 public class UciEngineAgent implements GameServerTemp, InfoListener, UiGameListener {
 
+	public static enum State {
+		BEFORE_STARTING,
+		STARTED,
+		//THINKING,
+		QUIT;
+	}
+	
+	//TODO check states in some state dependent methods 
+	private volatile State state = State.BEFORE_STARTING; 
+	
 	private byte color;
+	
+	private volatile boolean isThinking = false; 
 
 	private UciProtocol uciProtocol;
 	private CountDownLatch startCountDownLatch;
 	private EngineInfo engineInfo = new EngineInfo();
+	private String name;
 	
-	
-	public UciEngineAgent(byte color, String path) {
+	public UciEngineAgent(byte color, String path, String name) {
+		this.name = name;
 		this.color = color;
 		uciProtocol = new UciProtocol(path, this, engineInfo);
 		uciProtocol.setInfoListener(this);
 	}
 	
-	
+	public String getName() {
+		return name;
+	}
+
 	public EngineInfo getEngineInfo() {
 		return engineInfo;
 	}
+	
+	public State getState() {
+		return state;
+	}
 
-	void setColor(byte color) {
+	boolean isThinking() {
+		return isThinking;
+	}
+
+	public void setColor(byte color) {
 		//TODO check state
 		this.color = color;
+	}
+	
+	public byte getColor() {
+		return color;
 	}
 
 	/**
@@ -48,6 +77,8 @@ public class UciEngineAgent implements GameServerTemp, InfoListener, UiGameListe
 	 */
 	public void play(LongAlgebraicMove laMove) throws InvalidMoveException {
 	
+		isThinking = false;
+		
 		if(UiGame.instance.getGame().getCurrentPosition().colorToMove != color) {
 			//TODO send something via Uci
 			throw new InvalidMoveException("Wrong player : " + color);
@@ -93,6 +124,8 @@ public class UciEngineAgent implements GameServerTemp, InfoListener, UiGameListe
 		} catch (InterruptedException e) {
 			// TODO what to do ???
 		}
+		
+		state = State.STARTED;
 	}
 	
 	/**
@@ -107,8 +140,9 @@ public class UciEngineAgent implements GameServerTemp, InfoListener, UiGameListe
 			moves.add(gameNode.getNextMove());
 			gameNode = gameNode.getNext();
 		}
+		Position position = UiGame.instance.getGame().getHeadGameNode().getPosition();
 		
-		PlayCommand playCommand = new PlayCommand(Position.getStartPosition(), moves);
+		PlayCommand playCommand = new PlayCommand(position, moves);
 		playCommand.setTimeFromEnvironment();
 
 		return playCommand;
@@ -120,15 +154,29 @@ public class UciEngineAgent implements GameServerTemp, InfoListener, UiGameListe
 	 * quit the engine
 	 */
 	public void quit() {
+		isThinking = false;
 		uciProtocol.quit();
+		state = State.QUIT;
 	}
 
+
+	/**
+	 * stop computing
+	 */
+	public void stop() {
+		isThinking = false;
+		uciProtocol.stop();
+	}
+
+	
 	/**
 	 * Generic change to game in UI
 	 */
 	@Override
 	public void onGenericChange(UiGameListener.GameChangeType changeType) {
-		//TODO how to implement this?
+		if(UiGame.instance.getGame().getCurrentGameNode().getNext() == null) {
+			onDoMove(null);
+		}
 	}
 
 	/**
@@ -137,7 +185,10 @@ public class UciEngineAgent implements GameServerTemp, InfoListener, UiGameListe
 	@Override
 	public void onDoMove(Move move) {
 		if(UiGame.instance.getGame().getCurrentPosition().colorToMove == color) {
-			uciProtocol.sendCommand(getPlayCommand());	
+			if(UiGame.instance.getGame().getCurrentGameNode().getGeneratedMoves().continuation == Continuation.POSSIBLE_MOVES) {  
+				uciProtocol.sendCommand(getPlayCommand());
+				isThinking = true;
+			}
 		}
 	}
 
@@ -146,7 +197,7 @@ public class UciEngineAgent implements GameServerTemp, InfoListener, UiGameListe
 	 */
 	@Override
 	public void onUndoMove(Move move) {
-		//TODO how to implement this?
+		//do nothing
 	}
 	
 }

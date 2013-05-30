@@ -43,8 +43,13 @@ public class UiGame implements GameServerTemp {
 	private List<UciEngineAgent> uciAgents = new ArrayList<UciEngineAgent>();
 	
 	public void addUciEngineAgent(UciEngineAgent uciEngineAgent) {
+		if(!uciAgents.isEmpty()) {
+			for(UciEngineAgent uciAgent : uciAgents) {
+				uciAgent.quit();
+			}
+		}		
 		uciAgents.add(uciEngineAgent);
-		addListener(uciEngineAgent);
+		listeners.add(2, uciEngineAgent);
 	}
 	
 	public void removeUciEngineAgent(UciEngineAgent uciEngineAgent) {

@@ -4,13 +4,14 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.virutor.chess.model.Game;
 import org.virutor.chess.model.Position;
 import org.virutor.chess.standard.PgnGame;
 import org.virutor.chess.standard.PgnTimeControlHandler;
 import org.virutor.chess.standard.time.SuddenDeathTimeControl;
 import org.virutor.chess.standard.time.TimeControl;
-import org.virutor.chess.uci.UciEngineAgent;
 import org.virutor.chess.uci.UciProtocolException;
+import org.virutor.chess.uci.UciUtils;
 import org.virutor.chess.ui.model.UiGame;
 
 public abstract class ConfigStorage {
@@ -19,6 +20,7 @@ public abstract class ConfigStorage {
 	
 	public abstract Config getConfig();
 	public abstract void saveConfig(Config config) throws Exception;
+	public abstract void saveLastGame() throws Exception;
 	
 	
 	private List<TimeControl> getDefaultTimeControls() {
@@ -40,6 +42,10 @@ public abstract class ConfigStorage {
 		String blackType = (String)config.lastGame.getProperties().get(PgnGame.PROPERTY_BLACK_TYPE);
 		applyPlayer(config, blackType, config.lastGame.getBlack(), Position.COLOR_BLACK);
 
+		
+		Game game = config.lastGame.getGame();
+		game.setCurrentGameNode(game.getTailGameNode());
+		
 		UiGame.instance.setPgnGame(config.lastGame);
 		
 	}
@@ -49,30 +55,19 @@ public abstract class ConfigStorage {
 		 
 		if(PgnGame.PROPERTY_PLAYER_TYPE_HUMAN.equals(type)) {
 			if(UNKNOWN_PLAYER.equals(name)) {
-				//TODO 
+				//TODO test it
 			}			
 		} else if(PgnGame.PROPERTY_PLAYER_TYPE_PROGRAM.equals(type)) {
 			
 			if(!config.uciEngines.containsKey(name)) {				
 				//TODO unknown engine
 			} else {
-				UciEngine uciEngine = config.uciEngines.get(name);
-				UciEngineAgent agent = new UciEngineAgent(color, uciEngine.getPath());
-				UiGame.instance.addUciEngineAgent(agent);
 				
-				
-				/**
-				 * TODO 
-				 * a) centralize 
-				 * b) do not do this here -> there are other places (com.virutor.chess.ui.components.actions.EngineActions)
-				 * 			that'd start the agent and we have to listen to the name centrally
-				 */
 				try {
-					agent.start();
-				} catch (UciProtocolException e) {
+					UciUtils.loadEngine(name, color);
+				} catch (UciProtocolException e1) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}		
+				}
 		
 			}
 			

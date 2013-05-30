@@ -18,12 +18,13 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.virutor.chess.standard.PgnGame;
 import org.virutor.chess.standard.PgnGameSuite;
+import org.virutor.chess.ui.model.UiGame;
 
 public class DefaultConfigStorageImpl extends ConfigStorage {
 
 	private static final Logger LOG = LogManager.getLogger(DefaultConfigStorageImpl.class);
 
-	private static Config CONFIG = null;
+	private static volatile Config CONFIG = null;
 	
 	
 	/*
@@ -162,7 +163,7 @@ public class DefaultConfigStorageImpl extends ConfigStorage {
 			IOUtils.closeQuietly(writer);
 		}
 		
-		LOG.warn("Not implemented");
+		
 	}
 	
 	private Properties loadProperties(String path) {
@@ -202,6 +203,20 @@ public class DefaultConfigStorageImpl extends ConfigStorage {
 		}
 		
 		return file;
+		
+	}
+
+	@Override
+	public void saveLastGame() throws Exception {
+
+		Writer writer = null;
+		try {
+			writer = new OutputStreamWriter(new FileOutputStream(LAST_GAME_PATH_FILE));
+			writer.write(UiGame.instance.getPgnGame().format());
+		
+		} finally {
+			IOUtils.closeQuietly(writer);
+		}
 		
 	}
 	

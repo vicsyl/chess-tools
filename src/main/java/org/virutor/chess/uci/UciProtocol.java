@@ -28,16 +28,16 @@ import org.virutor.chess.uci.commands.UciCommand;
  *
  */
 public class UciProtocol {
-
-	private static final Logger LOG = Logger.getLogger(UciProtocol.class); 
+	
+	
+	private static final Logger LOG = Logger.getLogger(UciProtocol.class + ".second"); 
+	private static final Logger UCI_LOG = Logger.getLogger(UciProtocol.class); 
 	
 	private String path;
 	private final EngineInfo engineInfo;
 	
 	private GameServerTemp gameServer;
 	private InfoListener infoListener;
-	private UciProtocolListener uciProtocolListener;
-		
 	
 	private Process uciEngineProcess;
 	private BufferedReader bufferedReader;
@@ -81,14 +81,6 @@ public class UciProtocol {
 		return engineInfo;
 	}
 	
-	public UciProtocolListener getUciProtocolListener() {
-		return uciProtocolListener;
-	}
-
-	public void setUciProtocolListener(UciProtocolListener uciProtocolListener) {
-		this.uciProtocolListener = uciProtocolListener;
-	}
-
 	/**
 	 * Starts the engine synchronously
 	 * TODO think about asynchronous behavior
@@ -157,7 +149,7 @@ public class UciProtocol {
 				
 			} catch (Throwable e) {
 				//TODO
-				LOG.info(e.getMessage());
+				LOG.error(e.getMessage(), e);
 			}
 		}
 	}
@@ -246,15 +238,12 @@ public class UciProtocol {
 			try {
 				bufferedWriter.write(command + "\n");
 				bufferedWriter.flush();
-				if(uciProtocolListener != null) {
-					uciProtocolListener.onWriteCommand(command);
-				}
 			} catch (IOException e) {
 				//TODO
-				throw new RuntimeException();
+				throw new RuntimeException(e);
 			}
 		}
-		LOG.info("------->" + command);
+		UCI_LOG.info("------->" + command);
 	}
 	
 	
@@ -273,10 +262,7 @@ public class UciProtocol {
 			}			
 		}
 		String read = bufferedReader.readLine();
-		LOG.info("<-------" + read);
-		if(uciProtocolListener != null) {
-			uciProtocolListener.onReadCommand(read);
-		}
+		UCI_LOG.info("<-------" + read);
 		return read;
 	}
 

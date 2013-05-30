@@ -6,7 +6,8 @@ public interface UiGameListener {
 
 	public enum GameChangeType {
 		MOVE_INDEX,
-		COMPLETE_CHANGE	
+		COMPLETE_CHANGE,
+		CONFIG_CHANGE,
 	} 
 	
 	void onGenericChange(GameChangeType gameChangeType); 
