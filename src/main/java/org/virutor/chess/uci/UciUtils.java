@@ -60,13 +60,24 @@ public class UciUtils {
 		
 	}
 	
+	public static boolean isEngineToMove() {
+
+		byte colorToMove = UiGame.instance.getGame().getCurrentPosition().colorToMove;
+		for(UciEngineAgent uciEngineAgent : UiGame.instance.getUciAgents()) {
+			if(uciEngineAgent.getColor() == colorToMove) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public static boolean isHumanPlaying() {
 		
 		//TODO dummy
 		return whichEngineIsPlaying() == null;
 	}
 	
-	public static boolean isEnginePlaying() {
+	public static boolean isEngineThinking() {
 		
 		//TODO dummy
 		return whichEngineIsPlaying() != null;

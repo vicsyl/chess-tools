@@ -136,7 +136,7 @@ public class UciEngineAgent implements GameServerTemp, InfoListener, UiGameListe
 		
 		List<Move> moves = new ArrayList<Move>();
 		GameNode gameNode = UiGame.instance.getGame().getHeadGameNode();
-		while(gameNode.getNextMove() != null) {
+		while(gameNode.getNextMove() != null && gameNode != UiGame.instance.getGame().getCurrentGameNode()) {
 			moves.add(gameNode.getNextMove());
 			gameNode = gameNode.getNext();
 		}

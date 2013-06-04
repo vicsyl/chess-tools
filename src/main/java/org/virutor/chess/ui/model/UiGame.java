@@ -111,6 +111,17 @@ public class UiGame implements GameServerTemp {
 				
 	}
 	
+	public void notifyListenersButAgents(UiGameListener.GameChangeType change) {
+		
+		for(UiGameListener listener : listeners) {
+			if(!(listener instanceof UciEngineAgent)) {
+				listener.onGenericChange(change);
+			}
+		}
+				
+	}
+	
+	
 	
 	//TODO delegate / join thwo methods (play / doMove) 
 	@Override

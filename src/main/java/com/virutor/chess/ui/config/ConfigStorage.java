@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.log4j.Logger;
 import org.virutor.chess.model.Game;
 import org.virutor.chess.model.Position;
 import org.virutor.chess.standard.PgnGame;
@@ -16,6 +17,8 @@ import org.virutor.chess.ui.model.UiGame;
 
 public abstract class ConfigStorage {
 
+	private static final Logger log = Logger.getLogger(ConfigStorage.class); 
+	
 	private static final String UNKNOWN_PLAYER = "UNKNOWN_PLAYER"; 
 	
 	public abstract Config getConfig();
@@ -66,7 +69,7 @@ public abstract class ConfigStorage {
 				try {
 					UciUtils.loadEngine(name, color);
 				} catch (UciProtocolException e1) {
-					// TODO Auto-generated catch block
+					log.error("Exception thrown when loading engine " + name, e1);
 				}
 		
 			}
