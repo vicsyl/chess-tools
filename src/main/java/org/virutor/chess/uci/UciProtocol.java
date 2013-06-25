@@ -158,7 +158,7 @@ public class UciProtocol {
 	private void processCommand(String line) {		
 		
 		if(line == null) {
-			throw new NullPointerException();
+			return; //probably end of life but TODO make it better 
 		}	
 		
 		String[] words = line.split(" ");

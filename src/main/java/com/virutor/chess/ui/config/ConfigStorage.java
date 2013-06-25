@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
+import org.virutor.chess.application.Services;
 import org.virutor.chess.model.Game;
 import org.virutor.chess.model.Position;
 import org.virutor.chess.standard.PgnGame;
@@ -68,6 +69,9 @@ public abstract class ConfigStorage {
 				
 				try {
 					UciUtils.loadEngine(name, color);
+					//TODO centralize into UciUtils.loadEngine 
+					//TODO and remove this hook
+					Services.statusBarHook.log(name + " successfully loaded");
 				} catch (UciProtocolException e1) {
 					log.error("Exception thrown when loading engine " + name, e1);
 				}
