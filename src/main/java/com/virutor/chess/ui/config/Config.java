@@ -17,10 +17,6 @@ public class Config {
 	HumanPlayer humanPlayer;
 	Map<String, UciEngine> uciEngines = new HashMap<String, UciEngine>();
 	
-	public PgnGame getLastGame() {
-		return lastGame;
-	}
-	
 	public HumanPlayer getHumanPlayer() {
 		return humanPlayer;
 	}
