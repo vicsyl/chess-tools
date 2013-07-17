@@ -1,6 +1,5 @@
 package org.virutor.chess.uci;
 
-import org.apache.commons.lang.NullArgumentException;
 import org.virutor.chess.application.Services;
 import org.virutor.chess.model.Position;
 import org.virutor.chess.standard.PgnGame;
@@ -35,7 +34,7 @@ public class UciUtils {
 	public static void removeEngine(String uciEngineAgentName) { 
 		
 		if(uciEngineAgentName == null) {
-			throw new NullArgumentException("uciEngineAgentName");
+			throw new NullPointerException("uciEngineAgentName");
 		}
 
 		UciEngineAgent agentToRemove = null;

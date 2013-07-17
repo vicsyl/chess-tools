@@ -14,6 +14,11 @@ import org.virutor.chess.standard.time.TimeControl;
 import org.virutor.chess.uci.UciConstants;
 import org.virutor.chess.ui.model.UiGame;
 
+/**
+ * TODO rename to Position/GoCommand or something like this...
+ * @author vaclav
+ *
+ */
 public class PlayCommand implements UciCommand {
 
 	public Position initialPosition;

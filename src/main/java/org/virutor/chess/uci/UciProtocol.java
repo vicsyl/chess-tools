@@ -1,6 +1,11 @@
 package org.virutor.chess.uci;
 
-import static org.virutor.chess.uci.UciConstants.*;
+import static org.virutor.chess.uci.UciConstants.BEST_MOVE;
+import static org.virutor.chess.uci.UciConstants.ID;
+import static org.virutor.chess.uci.UciConstants.INFO;
+import static org.virutor.chess.uci.UciConstants.OPTION;
+import static org.virutor.chess.uci.UciConstants.READY_OK;
+import static org.virutor.chess.uci.UciConstants.UCI_OK;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -118,10 +123,16 @@ public class UciProtocol {
 		writeCommand(ServerToEngineUciCommand.COMMAND_STOP);
 	}
 
-	public void quit() {
+	public static enum QuitStatus {
+		QUIT_ALREADY,
+		OK,
+		FORCED
+	}
+	
+	public QuitStatus quit() {
 		//TODO rethink states
 		if(quit) {
-			return;
+			return QuitStatus.QUIT_ALREADY;
 		}
 		quit = true;
 		writeCommand(ServerToEngineUciCommand.COMMAND_QUIT);
@@ -131,9 +142,11 @@ public class UciProtocol {
 		try{ 
 			int ret = uciEngineProcess.exitValue();
 			LOG.trace("Uci engine process returned " + ret);
+			return QuitStatus.OK;
 		} catch (IllegalThreadStateException e) {
 			LOG.trace("Uci engine process had to be destroyed");
 			uciEngineProcess.destroy();			
+			return QuitStatus.FORCED;
 		}		 
 	}
 	
@@ -197,7 +210,7 @@ public class UciProtocol {
 					ComputationInfo computationInfo = ComputationInfo.parse(line);
 					infoListener.onInfo(computationInfo);
 				} catch (Exception e) {
-					String i = e.getMessage();
+					LOG.error("Cannot parse info line: " + line, e);
 				}
 				
 			}

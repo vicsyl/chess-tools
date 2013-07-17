@@ -1,4 +1,4 @@
-package com.virutor.chess.standard;
+package org.virutor.chess.standard;
 
 import java.io.ByteArrayInputStream;
 

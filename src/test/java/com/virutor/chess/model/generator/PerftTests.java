@@ -80,8 +80,10 @@ public class PerftTests {
 		data.checkMates = new long[] {0, 0, 0, 8, 347, 10828};
 		ret.add(new Object[]{data});
 		
+		//the FEN string was changed to contain '0 1' at the end 
+		// (these values were missing and the FEN considered invalid) 
 		data = new PerftTestData();
-		data.fenString = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -";
+		data.fenString = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1";
 		data.nodes = new long[] {48, 2039, 97862, 4085603/*, 193690690*/};
 		data.captures = new long[] {8, 351, 17102, 757163, 35043416};
 		data.ep = new long[] {0, 1, 45, 1929, 73365};
@@ -91,8 +93,10 @@ public class PerftTests {
 		data.checkMates = new long[] {0, 0, 1, 43, 30171};
 		ret.add(new Object[]{data});
 				
+		//the FEN string was changed to contain '0 1' at the end 
+		// (these values were missing and the FEN considered invalid) 
 		data = new PerftTestData();
-		data.fenString = "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - -";
+		data.fenString = "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1";
 		data.nodes = new long[] {14, 191, 2812, 43238, 674624, 11030083/*, 178633661*/};
 		data.captures = new long[] {1, 14, 209, 3348, 52051, 940350, 14519036};
 		data.ep = new long[] {0, 0, 2, 123, 1165, 33325, 294874};
@@ -119,8 +123,6 @@ public class PerftTests {
 	
 	@Test
 	public void basicPerftTest() throws Exception {
-		
-		//setVariant();
 		
 		Position position = new Position();
 		FenUtils.setFen(data.fenString, position);

@@ -191,7 +191,17 @@ public class ComputationInfo {
 			
 			List<LongAlgebraicMove> ret = new ArrayList<LongAlgebraicMove>();
 			LongAlgebraicMove la = null;
-			while((la = LONG_ALGEBRAIC_MOVE_PARSER.parse(restOfTheLine)) != null) {
+			while(true) {
+				String[] words = StringUtils.split(restOfTheLine.toString());
+				if(words != null && words.length > 0) {
+					if(PARSERS.containsKey(words[0])) {
+						break;
+					}
+				}
+				la = LONG_ALGEBRAIC_MOVE_PARSER.parse(restOfTheLine);
+				if(la == null) {
+					break;
+				}
 				ret.add(la);
 				if(StringUtils.isBlank(restOfTheLine.toString())) {
 					break;

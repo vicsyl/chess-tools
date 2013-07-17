@@ -1,4 +1,4 @@
-package com.virutor.chess.standard;
+package org.virutor.chess.standard;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,11 +17,11 @@ public class PgnRoundTest {
 
 	private static class ExpectedData {
 		
-		boolean shouldFail;
+		boolean invalid;
 		PgnRound expectedInstance;
 		
 		ExpectedData(boolean shouldFail) {
-			this.shouldFail = shouldFail;
+			this.invalid = shouldFail;
 		}
 
 		ExpectedData(PgnRound expectedInstance) {
@@ -58,30 +58,20 @@ public class PgnRoundTest {
 	@Test
 	public void creationTests() {
 		
-		if(expectedData.shouldFail) {
-			//skipping
+		PgnRound pgnRound = PgnRound.getInstance(inputString);  
+		
+		Assert.assertEquals(inputString, pgnRound.getOriginalString());
+
+		if(expectedData.invalid) {
+			Assert.assertEquals("?", pgnRound.toString());			
 			return;
 		}
 		
-		PgnRound pgnRound = PgnRound.getInstance(inputString);  
 		if(expectedData.expectedInstance != null) {
 			Assert.assertTrue(expectedData.expectedInstance == pgnRound);
-		}
-		Assert.assertEquals(inputString, pgnRound.toString());
-		
-	}
-	
-	@Test(expected = IllegalArgumentException.class)	
-	public void negativeCreationTest() {
-
-		if(!expectedData.shouldFail) {
-			//skipping
-			throw new IllegalArgumentException();
+			Assert.assertEquals(inputString, pgnRound.toString());
 		}
 		
-		PgnRound.getInstance(inputString);  
-		
 	}
-	
 	
 }

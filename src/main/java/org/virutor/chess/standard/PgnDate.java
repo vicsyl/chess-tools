@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 
 public class PgnDate {
 
-	private static final String UNKNOWN = "????.??.??";
+	static final String UNKNOWN = "????.??.??";
 	
 	private final String originalString;
 	private final String stringRepresentation;

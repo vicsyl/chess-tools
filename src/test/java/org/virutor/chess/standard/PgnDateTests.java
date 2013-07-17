@@ -1,4 +1,4 @@
-package com.virutor.chess.standard;
+package org.virutor.chess.standard;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -73,29 +73,19 @@ public class PgnDateTests {
 	@Test
 	public void creationTests() {
 		
+		PgnDate pgnDate = new PgnDate(inputString);  
+		Assert.assertEquals(inputString, pgnDate.getOriginalString());
+		
 		if(expectedData.shouldFail) {
-			//skipping
+			Assert.assertEquals(PgnDate.UNKNOWN, pgnDate.toString());
 			return;
 		}
 		
-		PgnDate pgnDate = new PgnDate(inputString);  
 		if(expectedData.exactDate != null) {
 			Assert.assertEquals(expectedData.exactDate, pgnDate.getExactDate());
 		}
 		
-	}
-	
-	@Test(expected = IllegalArgumentException.class)	
-	public void negativeCreationTest() {
-
-		if(!expectedData.shouldFail) {
-			//skipping
-			throw new IllegalArgumentException();
-		}
-		
-		new PgnDate(inputString);  
-		
-	}
+	}	
 	
 	
 }
