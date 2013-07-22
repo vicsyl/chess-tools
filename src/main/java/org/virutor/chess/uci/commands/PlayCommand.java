@@ -28,7 +28,7 @@ public class PlayCommand implements UciCommand {
 	public Integer winc;
 	public Integer binc;
 	public Integer movesToGo;
-	boolean infinite;
+	public boolean infinite;
 	
 	public PlayCommand(Position initialPosition, List<Move> moves) {		
 		this.initialPosition = initialPosition;
