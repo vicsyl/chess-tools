@@ -269,8 +269,8 @@ public class ComputationInfo {
 		PARSERS.put(SCORE, new ComputationInfoScorePropertyParser());
 	}
 	
-	
-	
+
+	//FIXME really??!!
 	public void copyFrom(ComputationInfo from) {
 		
 		for(Map.Entry<String, Object> entry : from.properties.entrySet()) {
@@ -282,8 +282,20 @@ public class ComputationInfo {
 		
 	} 
 	
+	private final String originalString;
+	
+	public String getOriginalString() {
+		return originalString;
+	}
+
+
+	private ComputationInfo(String originalString) {
+		this.originalString = originalString;
+	}
+
+
 	public static ComputationInfo parse(String line) { 
-		return parse(line, new ComputationInfo());
+		return parse(line, new ComputationInfo(line));
 	}
 	
 	

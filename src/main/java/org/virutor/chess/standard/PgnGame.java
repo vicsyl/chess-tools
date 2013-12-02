@@ -12,9 +12,12 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -103,6 +106,16 @@ public class PgnGame {
 	private PgnDate pgnDate; 
 	private PgnRound pgnRound;
 	//result delegated to game.result
+	
+	public void setDefaultSevenTagRoosterProperty() {
+		setBlack("Black");
+		setWhite("White");
+		setDate(new PgnDate(new Date()));
+		setEvent("?");
+		setStringProperty(PgnGame.PROPERTY_SITE, "?");
+		setResult(Result.UNRESOLVED);
+		setPgnRound(PgnRound.getInstance("1"));
+	}
 	
 	public void setGame(Game game) {
 		this.game = game;
@@ -279,12 +292,11 @@ public class PgnGame {
 	
 	private void assertAllSevenTagsPresent() {
 		
-		for(String key : SEVEN_TAG_ROOSTER_PROPERTY_NAMES) {
-			if(!properties.containsKey(key)) {
-				throw new IllegalStateException("Doesn't contain seven tag roster property: " + key);
-			}
+		if(!properties.keySet().containsAll(SEVEN_TAG_ROOSTER_PROPERTY_NAMES)) {
+			Set<String> missing = new HashSet<String>(SEVEN_TAG_ROOSTER_PROPERTY_NAMES);
+			missing.removeAll(properties.keySet());			
+			throw new IllegalStateException("Doesn't contain all seven tag roster properties. Missing ones: " + missing);			
 		}
-		//TODO special fields
 		
 	}
 	

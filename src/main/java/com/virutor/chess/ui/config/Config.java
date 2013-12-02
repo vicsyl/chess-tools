@@ -24,5 +24,21 @@ public class Config {
 	public Map<String, UciEngine> getUciEngines() {
 		return uciEngines;
 	}
-		
+
+	public PgnGame getLastGame() {
+		return lastGame;
+	}
+
+	public void setLastGame(PgnGame lastGame) {
+		this.lastGame = lastGame;
+	}
+
+	public void setHumanPlayer(HumanPlayer humanPlayer) {
+		this.humanPlayer = humanPlayer;
+	}
+
+	public void setUciEngines(Map<String, UciEngine> uciEngines) {
+		this.uciEngines = uciEngines;
+	}		
+	
 }

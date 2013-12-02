@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.virutor.chess.model.GameNode;
 import org.virutor.chess.model.Move;
 import org.virutor.chess.model.Position;
@@ -21,6 +23,8 @@ import org.virutor.chess.ui.model.UiGameListener;
  */
 public class UciEngineAgent implements GameServerTemp, InfoListener, UiGameListener {
 
+	private static final Logger LOG = LogManager.getLogger(UciEngineAgent.class);
+	
 	public static enum State {
 		BEFORE_STARTING,
 		STARTED,
@@ -102,9 +106,11 @@ public class UciEngineAgent implements GameServerTemp, InfoListener, UiGameListe
 	/**
 	 * Info sent from uci engine. Delegate to other (possibly UI listener)
 	 */
-	public void onInfo(ComputationInfo info) {
+	public void onInfo(ComputationInfo info) {		
 		//TODO move to UiGame
+		LOG.debug("onInfo: " + info.getOriginalString());
 		for(InfoListener infoListener :	UiGame.instance.getInfoListeners()) {
+			LOG.debug("onInfo sent to : " + infoListener.getClass());
 			infoListener.onInfo(info);
 		}
 	}

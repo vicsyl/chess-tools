@@ -145,4 +145,8 @@ public class Game {
 		this.currentGameNode = currentGameNode;
 	}
 	
+	public void setCurrentGameNodeToTail() {
+		setCurrentGameNode(getTailGameNode());
+	}
+	
 }
