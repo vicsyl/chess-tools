@@ -15,7 +15,7 @@ public class GameNode {
 		List<GameNode> variations = new ArrayList<GameNode>();
 		GameNode next;
 		GameNode previous;
-		//TODO continuation - mate / 1-0 / * / +-
+		//TODO remove it and use position.fullMoveClock  
 		int ordinalNumber;
 		String comment;
 		

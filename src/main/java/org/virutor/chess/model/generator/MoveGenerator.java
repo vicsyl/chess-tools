@@ -39,11 +39,17 @@ import static org.virutor.chess.model.Position.OFF_BOARD;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.virutor.chess.model.Field;
 import org.virutor.chess.model.Move;
 import org.virutor.chess.model.Position;
+import org.virutor.chess.model.Position.Continuation;
 
 public class MoveGenerator {
 
+	private static final Logger LOG = LogManager.getLogger(MoveGenerator.class);
+	
 	private static final int[] BISHOP_OFFSETS = new int[] {-11,11,-9,9};
 	private static final int[] ROOK_OFFSETS = new int[] {10,-10,-1,1};
 	private static final int[] QUEEN_OFFSETS = new int[] {-11,-10,-9,-1,9,10,11,1};
@@ -79,6 +85,14 @@ public class MoveGenerator {
 	
 	private static final CastleData CASTLE_DATA[] = new CastleData[4];
 	
+	//TODO centralize CASTLE_CHANGE_INDICES and CASTLE_DATA.king/rook.from/to	
+	private static final int[][] CASTLE_CHANGE_INDICES = new int[][] {
+		{E1, G1, H1, F1}, 
+		{E1, C1, A1, D1}, 
+		{E8, G8, H8, F8}, 
+		{E8, C8, A8, D8}, 
+	};
+	
 	static {
 		
 		boolean[] castlesWhiteAnd = new boolean[4];
@@ -99,10 +113,26 @@ public class MoveGenerator {
 		
 	}
 	
+	/**
+	 * NOTE: moveCastleFlag (see Move) differs from castle index (see Position)!! 
+	 * @param moveCastleFlag
+	 * @return
+	 */
+	public static int[] getCastleChangeIndices(int moveCastleFlag) {
+		 return CASTLE_CHANGE_INDICES[moveCastleFlag - 1];
+	}
 	
 	
 	public static class GeneratedMoves {
 
+		public static GeneratedMoves _3_FOLD_REPETION_GENERATED_MOVES = new GeneratedMoves(Position.Continuation._3_FOLD_REPETITION); 
+		public static GeneratedMoves _50_MOVES_DRAW_GENERATED_MOVES = new GeneratedMoves(Position.Continuation._50_MOVES_DRAW);
+		
+		public GeneratedMoves() {}
+		
+		private GeneratedMoves(Continuation continuation) {
+			this.continuation = continuation;
+		}
 		public List<Move> moves = new ArrayList<Move>();
 		public List<Position> position = new ArrayList<Position>();
 		public Position.Continuation continuation = Position.Continuation.POSSIBLE_MOVES;
@@ -127,6 +157,13 @@ public class MoveGenerator {
 	}
 
 	public static GeneratedMoves generateMoves(Position position) {
+		
+		if(position.halfMoveClock >= 100) {
+			if(position.halfMoveClock > 100) {
+				LOG.warn("Halfmove clock strictly greater than 100, should not happen: " + position.halfMoveClock);
+			}
+			return GeneratedMoves._50_MOVES_DRAW_GENERATED_MOVES;
+		}			
 		
 		GeneratedMoves ret = new GeneratedMoves();
 		
@@ -269,6 +306,11 @@ public class MoveGenerator {
 		} else {
 			ret.continuation = Position.Continuation.POSSIBLE_MOVES;
 		}
+
+		//let's keep it simple and centralize updating to the new hash here !!!
+		for(int i = 0; i < ret.position.size(); i++) {
+			ZobristHashing.updatePositionHashAfterMove(position, ret.position.get(i), ret.moves.get(i));
+		}
 		
 		return ret;
 		
@@ -297,9 +339,12 @@ public class MoveGenerator {
 		
 		newMove.castle_ep_flag = CASTLE_DATA[castleIndex].castleMoveFlag;
 
-		//newPosition.fullMoveClock++; //??
+		if(newPosition.colorToMove == Position.COLOR_BLACK) {
+			newPosition.fullMoveClock++; 
+		}
+		
 		newPosition.halfMoveClock++;
-		newPosition.colorToMove = (byte)(1 - newPosition.colorToMove);
+		newPosition.colorToMove = Position.oppositeColor(newPosition.colorToMove);
 		
 		ret.moves.add(newMove);
 		ret.position.add(newPosition);
@@ -344,15 +389,21 @@ public class MoveGenerator {
 		
 		if(position.board[to].color != COLOR_FREE) {
 			newMove.piece_captured = position.board[to].pieceType;
+			newPosition.halfMoveClock = 0;
+		} else if(newMove.piece_moved == PIECE_PAWN) {
+			newPosition.halfMoveClock = 0;
+		} else {
+			newPosition.halfMoveClock++;
 		}
 		
 		newPosition.board[to].color = newPosition.board[from].color;
 		newPosition.board[to].pieceType = newPosition.board[from].pieceType;
 		newPosition.board[from].color = COLOR_FREE;
 		
-		newPosition.halfMoveClock++;
-		//newPosition.fullMoveClock++; //??
-		//newPosition.hash1 = ??
+		
+		if(newPosition.colorToMove == Position.COLOR_BLACK) {
+			newPosition.fullMoveClock++; 
+		}
 
 		if(newMove.piece_moved == PIECE_KING) {
 			newPosition.kingIndices[newPosition.colorToMove] = to;
@@ -397,7 +448,7 @@ public class MoveGenerator {
 
 		
 		newPosition.possibleEpIndex = OFF_BOARD;
-		newPosition.colorToMove = (byte)(1 - newPosition.colorToMove);
+		newPosition.colorToMove = Position.oppositeColor(newPosition.colorToMove);
 
 		return generatedMoveAndPosition;
 
@@ -419,6 +470,14 @@ public class MoveGenerator {
 
 	
 	public static boolean isThreatened(Position position, int index, byte fromColor) {
+		
+		// TODO these three blocks can be merged into one !! 		
+		for(int offset : QUEEN_OFFSETS) {
+			 Field field =  position.board[index + offset];
+			 if(field.color == fromColor && (field.pieceType == PIECE_QUEEN || field.pieceType == PIECE_KING)) {
+				 return true;
+			 }
+		}
 		for(int offset : ROOK_OFFSETS) {
 			for(int i = 1; i < 8; i++) {
 				byte color = position.board[index + i*offset].color;  

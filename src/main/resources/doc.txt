@@ -13,5 +13,15 @@ plan:
 
 	implement 
 		a) 50 move rule
-		b) threefold rep. rule 
-			i) implement zobrist hashing!!!!  
+		b) threefold rep. rule                 OK 
+			i) implement zobrist hashing!!!!   OK
+		c) insuficcient mating material... how is this actually enforced / implemented in pgn / practice / engines?	
+			
+			
+			
+			
+Features:
+
+FEN - doesn't support the shorter format with only 5 parts (without full move clock)
+
+MODEL/FEN - use fullmove clock for the ordinal number of the move

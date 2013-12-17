@@ -15,7 +15,7 @@ public class FenNotParametrizedTest {
 	@Test
 	public void startingPositionTest() {
 		final String expected = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-		final String actual = FenUtils.positionToFen(new Position().setStartPosition());
+		final String actual = FenUtils.positionToFen(Position.getStartPosition());
 		Assert.assertEquals(expected, actual);
 	}
 	

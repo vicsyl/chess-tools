@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 import org.virutor.chess.model.Field;
 import org.virutor.chess.model.Piece;
 import org.virutor.chess.model.Position;
+import org.virutor.chess.model.generator.ZobristHashing;
 
 public class FenUtils {
 	
@@ -20,6 +21,11 @@ public class FenUtils {
 	private static final Pattern PATTERN = Pattern.compile(PATTERN_STRING);
 
 
+	public static Position getPositionFromFen(String fenString) { 
+		Position position = new Position();
+		setFen(fenString, position);
+		return position;
+	}
 
 	public static void setFen(String fenString, Position position) {
 		
@@ -54,6 +60,8 @@ public class FenUtils {
 		if(matcher.groupCount() > 12) {
 			position.fullMoveClock = Integer.parseInt(matcher.group(13));
 		}
+		
+		ZobristHashing.setPositionHash(position);		
 	}
 
 	private static void setKingIndices(Position position) {

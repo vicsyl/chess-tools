@@ -8,6 +8,7 @@ import static org.virutor.chess.model.Piece.PIECE_QUEEN;
 import static org.virutor.chess.model.Piece.PIECE_ROOK;
 
 import org.virutor.chess.model.generator.MoveGenerator;
+import org.virutor.chess.model.generator.ZobristHashing;
 
 
 public class Position implements Cloneable {
@@ -16,7 +17,9 @@ public class Position implements Cloneable {
 	public static enum Continuation {
 		POSSIBLE_MOVES,
 		CHECK_MATE,
-		STALEMATE;
+		STALEMATE,
+		_50_MOVES_DRAW,
+		_3_FOLD_REPETITION
 	}
 
 	public static final int A1 = 21;
@@ -137,6 +140,10 @@ public class Position implements Cloneable {
 		}	
 	}
 	
+	public static byte oppositeColor(byte color) {
+		return (byte)(1 - color);
+	}
+	
 	public static final byte COLOR_WHITE = 0; 
 	public static final byte COLOR_BLACK = 1; 
 	public static final byte COLOR_FREE = 2; 
@@ -172,8 +179,7 @@ public class Position implements Cloneable {
 	public int halfMoveClock = 0;
 	public int fullMoveClock = 0;
 	
-	public long hash1;
-	public long hash2;
+	public long hash;	
 	
 	public Position() {		
 		emptyBoard();	
@@ -185,7 +191,10 @@ public class Position implements Cloneable {
 		return position;
 	} 
 	
-	//TODO made public because of FenUtils
+	
+	/**
+	 * only accessed from FenUtils; why cannot I make it protected??!!
+	 */
 	public void emptyBoard() {
 		for(int i = 0; i < 120; i++) {
 			board[i] = new Field();
@@ -216,8 +225,7 @@ public class Position implements Cloneable {
 		ret.colorToMove = colorToMove;
 		ret.fullMoveClock = fullMoveClock;
 		ret.halfMoveClock = halfMoveClock;
-		ret.hash1 = hash1;
-		ret.hash2 = hash2;
+		ret.hash = hash;
 		ret.possibleEpIndex = possibleEpIndex;
 
 		return ret;
@@ -266,6 +274,8 @@ public class Position implements Cloneable {
 		
 		fullMoveClock = 1;
 		
+		ZobristHashing.setPositionHash(this);
+				
 		return this;
 	}
 	

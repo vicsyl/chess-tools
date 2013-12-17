@@ -169,7 +169,7 @@ public class PgnGame {
 		
 		String line = null;
 
-		Game game = new Game(new Position().setStartPosition());
+		Game game = Game.newGameFromStartingPosition();
 		PgnGame toAdd = new PgnGame(game);
 		
 		boolean isFirstBlankSection = true;

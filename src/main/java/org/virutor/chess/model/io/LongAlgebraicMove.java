@@ -144,11 +144,22 @@ public class LongAlgebraicMove {
 		return true;
 	}
 	
-	
+	/**
+	 * TODO make it instance method !!!
+	 * @param laMove
+	 * @param position
+	 * @return
+	 */
 	public static Move findMove(LongAlgebraicMove laMove, Position position) {	
 		return findMove(laMove, MoveGenerator.generateMoves(position));
 	}
 		
+	/**
+	 * TODO make it instance method !!!
+	 * @param laMove
+	 * @param generatedMoves
+	 * @return
+	 */
 	public static Move findMove(LongAlgebraicMove laMove, GeneratedMoves generatedMoves) {
 		
 		for(Move move : generatedMoves.moves) {

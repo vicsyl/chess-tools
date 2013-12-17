@@ -101,7 +101,7 @@ public class MoveTextParser {
 						
 			Continuation continuation = gameNode.getPosition().getContinuation();
 			
-			//TODO not, this might apply only to variation (not the whole game)			
+			//TODO not, this might apply only to variation (not the whole game)!!			
 			if(continuation == Continuation.CHECK_MATE) {
 				game.setResultExplanation(ResultExplanation.MATE);
 			} else if(continuation == Continuation.STALEMATE) {

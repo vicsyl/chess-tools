@@ -1,9 +1,13 @@
 package org.virutor.chess.model;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 import org.virutor.chess.model.generator.MoveGenerator;
+import org.virutor.chess.model.generator.MoveGenerator.GeneratedMoves;
+import org.virutor.chess.model.generator.RepetitionGameContext;
 import org.virutor.chess.standard.SanMove;
 
 public class Game {
@@ -25,14 +29,17 @@ public class Game {
 		AGREED_DRAW,
 		SURRENDER,
 		TIME_UP,
-		FORFEIT		
+		FORFEIT,
+		THREE_FOLD_REPETITION
 	}
 		
 	private Result result = Result.UNRESOLVED;
 	private ResultExplanation resultExplanation = null;
+	
 	private GameNode headGameNode;
 	private GameNode currentGameNode;
-
+	private RepetitionGameContext repetitionGameContext = new RepetitionGameContext();
+	
 	public static Game newGameFromStartingPosition() {
 		return new Game(Position.getStartPosition());
 	}
@@ -50,6 +57,7 @@ public class Game {
 		headGameNode.generatedMoves = MoveGenerator.generateMoves(position);
 		// really??
 		headGameNode.ordinalNumber = position.fullMoveClock; 
+		repetitionGameContext.clear();
 		
 	}
 	
@@ -69,8 +77,20 @@ public class Game {
 		this.resultExplanation = resultExplanation;
 	}
 
-	
+	/**
+	 * When called from outside of this class (see MoveTextParser) the caller must ensure that
+	 * repetition context is recomputed once the game node is set...
+	 * Better yet, make this method private/remove it and always keep the repetition context up-to-date 
+	 * 
+	 * @param move
+	 * @param gameNode
+	 * @return
+	 */
 	public GameNode doMove(Move move, GameNode gameNode) {
+		
+		if(gameNode.generatedMoves.continuation != Position.Continuation.POSSIBLE_MOVES) {
+			throw new RuntimeException("This line has already a result :" + gameNode.generatedMoves.continuation);
+		}
 		
 		//TODO implement + delegate doMove(Move move) to here as well!!
 		//TODO decide on "overriding strategy"
@@ -100,8 +120,13 @@ public class Game {
 		
 	}
 	
-	public void doMove(Move move) {
-		currentGameNode = doMove(move, currentGameNode);	
+	public void doMove(Move move) {				
+		currentGameNode = doMove(move, currentGameNode);		
+		//TODO this could be done only in  doMove(Move move, GameNode gameNode) if only it's made private - see the comment there
+		int rep = repetitionGameContext.addAndGetRepetitions(getCurrentPosition());
+		if(rep >= 3) {
+			currentGameNode.generatedMoves = GeneratedMoves._3_FOLD_REPETION_GENERATED_MOVES; 
+		}
 	}	
 	
 	@Deprecated
@@ -143,6 +168,31 @@ public class Game {
 			throw new NullPointerException();
 		}
 		this.currentGameNode = currentGameNode;
+		recalculateRepetitionContext();
+		
+	}
+	
+	private void recalculateRepetitionContext() {
+		// recalculate the repetition context
+		repetitionGameContext.clear();
+		Queue<GameNode> nodes = new LinkedList<GameNode>();
+		GameNode node = currentGameNode;
+		do {
+			nodes.add(node);
+			if (node.position.halfMoveClock == 0) {
+				break;
+			}
+			node = node.previous;
+		} while (node != null);
+
+		while (!nodes.isEmpty()) {
+			node = nodes.poll();
+			int rep = repetitionGameContext.addAndGetRepetitions(node.position);
+			if (rep >= 3 && node.generatedMoves.continuation != Position.Continuation._3_FOLD_REPETITION) {
+				node.generatedMoves = GeneratedMoves._3_FOLD_REPETION_GENERATED_MOVES;
+			}
+		}
+
 	}
 	
 	public void setCurrentGameNodeToTail() {

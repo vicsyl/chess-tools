@@ -16,7 +16,6 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.virutor.chess.model.Move;
 import org.virutor.chess.model.Position;
-import org.virutor.chess.model.Position.Continuation;
 import org.virutor.chess.model.generator.MoveGenerator;
 import org.virutor.chess.model.generator.MoveGenerator.GeneratedMoves;
 import org.virutor.chess.standard.FenUtils;
