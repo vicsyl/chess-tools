@@ -3,6 +3,7 @@ package org.virutor.chess.standard;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.virutor.chess.model.Game;
 import org.virutor.chess.model.Game.ResultExplanation;
@@ -26,15 +27,10 @@ public class MoveTextParser {
 	};
 	
 	public void parse() {
-		
 		parse(game.getHeadGameNode());
-		
-		
-		
 	}
 	
 	private void parse(GameNode gameNode) {
-
 	
 		while(stringBuilder.length() > 0) {
 			
@@ -57,19 +53,22 @@ public class MoveTextParser {
 				continue;
 			}
 			
-			StringBuilder variationStringBuilder = getVariation(stringBuilder);
-			if(variationStringBuilder != null) {
+			String[] variantStrings = getVariations(stringBuilder);
+			if(variantStrings != null) {
 
-				GameNode previous = gameNode.getPrevious();
+				for(String variantString : variantStrings) {
 				
-				GameNode variationNode = previous.getNewVariationNode();
-				
-				MoveTextParser variationMoveTestParser = new MoveTextParser(variationStringBuilder, game);
-				variationMoveTestParser.parse(variationNode);				
-				//TODO more variation for one position!!! 
-				
-				//TODO handle comment
-				LOG.debug("Variation : " + variationStringBuilder);
+					GameNode previous = gameNode.getPrevious();
+					
+					GameNode variationNode = previous.getNewVariationNode();
+					
+					MoveTextParser variationMoveTestParser = new MoveTextParser(new StringBuilder(variantString), game);
+					variationMoveTestParser.parse(variationNode);				
+					//TODO more variation for one position!!! - I think this is ok now.... 
+					
+					//TODO handle comment - ??
+					LOG.debug("Variation : " + variantStrings);
+				}
 				continue;
 			}
 			
@@ -121,9 +120,14 @@ public class MoveTextParser {
 		}
 		return false;		
 	}
-	
 
-	private static StringBuilder getVariation(StringBuilder stringBuilder) {
+	/**
+	 * #standard #pgn : semicolons read successfully, but not fully supported 
+	 * 					(because when formatted, variants are split into separate sets of parenthesis)
+	 * @param stringBuilder
+	 * @return
+	 */	
+	private static String[] getVariations(StringBuilder stringBuilder) {
 		
 		if(stringBuilder.length() == 0 || stringBuilder.charAt(0) != '(') {
 			return null;
@@ -150,8 +154,7 @@ public class MoveTextParser {
 		StringBuilder newStringBuilder = new StringBuilder(stringBuilder.subSequence(1, fromIndex-1));
 		stringBuilder.delete(0, fromIndex);
 		
-		return newStringBuilder;
-		
+		return StringUtils.split(newStringBuilder.toString(), ";");
 	}
 	
 	private static StringBuilder getComment(StringBuilder stringBuilder) {

@@ -9,10 +9,10 @@ import static org.virutor.chess.model.Piece.PIECE_ROOK;
 
 import org.virutor.chess.model.generator.MoveGenerator;
 import org.virutor.chess.model.generator.ZobristHashing;
+import org.virutor.chess.standard.FenUtils;
 
 
 public class Position implements Cloneable {
-
 	
 	public static enum Continuation {
 		POSSIBLE_MOVES,
@@ -279,79 +279,10 @@ public class Position implements Cloneable {
 		return this;
 	}
 	
-	/*
-	String patternString = 	"([rnbqkpRNBKQP1-8]+)/([rnbqkpRNBKQP1-8]+)/([rnbqkpRNBKQP1-8]+)/([rnbqkpRNBKQP1-8]+)/" +
-							"([rnbqkpRNBKQP1-8]+)/([rnbqkpRNBKQP1-8]+)/([rnbqkpRNBKQP1-8]+)/([rnbqkpRNBKQP1-8]+)" +
-							" (w|b) ([KQkq]+|\\-) ([a-h][1-8]|\\-)([ \\d]?)([ \\d]?)";
-	Pattern pattern = Pattern.compile(patternString);
-
-	
-	public void setFen(String fenString) {
-	
-		Matcher matcher = pattern.matcher(fenString);
-
-		
-		if(!matcher.find()) {
-			throw new RuntimeException("not found");			
-		}
-		
-		
-		if(matcher.groupCount() < 11) {
-			throw new RuntimeException();
-		}
-
-		
-		emptyBoard();
-		
-		for(int i = 1; i < 9; i++) {
-			setFen1_8Row(9-i, matcher.group(i));
-		}
-		
-		setKingIndices();
-		
-		colorToMove = "w".equalsIgnoreCase(matcher.group(9)) ? COLOR_WHITE : COLOR_BLACK;
-
-		setFenCastles(matcher.group(10));
-		setPossibleEp(matcher.group(11));
-		
-		fullMoveClock = 0;
-		halfMoveClock = 0;
-		
-		if(matcher.groupCount() > 11 && matcher.group(12).length() > 1) {
-			fullMoveClock = Integer.parseInt(matcher.group(12).substring(1));	
-		} 
-				
-		if(matcher.groupCount() > 12 && matcher.group(13).length() > 1) {
-			halfMoveClock = Integer.parseInt(matcher.group(13).substring(1));
-		}
-		
-	}*/
-
-	/*
-	//TODO made public because of FenUtils
-	public void setKingIndices() {
-		kingIndices[0] = OFF_BOARD;		
-		kingIndices[1] = OFF_BOARD;		
-		for(int i = A1; i <= H8; i++) {
-			if((board[i].color == COLOR_BLACK || board[i].color == COLOR_WHITE) && (board[i].pieceType == PIECE_KING)) {
-				kingIndices[board[i].color] = i;
-			}
-		}
-		if(kingIndices[0] == -1 || kingIndices[1] == -1) {
-			throw new RuntimeException("At least one of the kings not found on the board when setting king indices");
-		}
+	@Override
+	public String toString() {
+		return FenUtils.positionToFen(this);		
 	}
-	
-	//TODO made public because of FenUtils
-	public void setPossibleEp(String epFen) {
-		
-		possibleEpIndex = OFF_BOARD;
-		if(epFen.equals("-")) {
-			return;
-		}
-		possibleEpIndex = parseField(epFen);
-		
-	}*/
 
 	public static int parseRow(char c) {
 		
@@ -385,107 +316,32 @@ public class Position implements Cloneable {
 		
 		return row1_8 * 10 + 10 + column1_8;
 	}
-	
-	/*
-	//TODO made public because of FenUtils
-	public void setFenCastles(String fenCastles) {
-		
-		for(int i = 0; i < 4; i++) {
-			castles[i] = false;
+
+	@Override
+	public int hashCode() {
+		if(hash == 0) {
+			ZobristHashing.setPositionHash(this);
 		}
-		if(fenCastles.equals("-")) {
-			return;
-		}
-		for(int i = 0; i < fenCastles.length(); i++) {
-			switch(fenCastles.charAt(i)) {
-				case 'K':
-					castles[CASTLE_INDEX_WHITE_0_0] = true;
-					break;
-				case 'Q':
-					castles[CASTLE_INDEX_WHITE_0_0_0] = true;
-					break;
-				case 'k':
-					castles[CASTLE_INDEX_BLACK_0_0] = true;
-					break;
-				case 'q':
-					castles[CASTLE_INDEX_BLACK_0_0_0] = true;
-					break;				
-			}
-		}
+		return (int) (hash ^ (hash >>> 32)); 
 	}
-	
-	//TODO made public because of FenUtils
-	public void setFen1_8Row(int row, String fenRow) {
-		
-		int column = 1;
-		for(int i = 0; i < fenRow.length(); i++) {
-			int boardIndex = row*10 + 10 + column;
-			switch(fenRow.charAt(i)) {
-				case 'r':
-					board[boardIndex].pieceType = PIECE_ROOK;
-					board[boardIndex].color = COLOR_BLACK;
-					break;
-				case 'n':
-					board[boardIndex].pieceType = PIECE_KNIGHT;
-					board[boardIndex].color = COLOR_BLACK;
-					break;
-				case 'b':
-					board[boardIndex].pieceType = PIECE_BISHOP;
-					board[boardIndex].color = COLOR_BLACK;
-					break;
-				case 'q':
-					board[boardIndex].pieceType = PIECE_QUEEN;
-					board[boardIndex].color = COLOR_BLACK;
-					break;
-				case 'k':
-					board[boardIndex].pieceType = PIECE_KING;
-					board[boardIndex].color = COLOR_BLACK;
-					break;
-				case 'p':
-					board[boardIndex].pieceType = PIECE_PAWN;
-					board[boardIndex].color = COLOR_BLACK;
-					break;
-	
-				case 'R':
-					board[boardIndex].pieceType = PIECE_ROOK;
-					board[boardIndex].color = COLOR_WHITE;
-					break;
-				case 'N':
-					board[boardIndex].pieceType = PIECE_KNIGHT;
-					board[boardIndex].color = COLOR_WHITE;
-					break;
-				case 'B':
-					board[boardIndex].pieceType = PIECE_BISHOP;
-					board[boardIndex].color = COLOR_WHITE;
-					break;
-				case 'Q':
-					board[boardIndex].pieceType = PIECE_QUEEN;
-					board[boardIndex].color = COLOR_WHITE;
-					break;
-				case 'K':
-					board[boardIndex].pieceType = PIECE_KING;
-					board[boardIndex].color = COLOR_WHITE;
-					break;
-				case 'P':
-					board[boardIndex].pieceType = PIECE_PAWN;
-					board[boardIndex].color = COLOR_WHITE;
-					break;
-				case '1':
-				case '2':
-				case '3':
-				case '4':
-				case '5':
-				case '6':
-				case '7':
-					column+=Integer.parseInt(String.valueOf(fenRow.charAt(i))) - 1;
-					break;
-				case '8':
-					return;
-			}
-			column++;
-			
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Position other = (Position) obj;
+
+		if(hash == 0) {
+			ZobristHashing.setPositionHash(this);
 		}
-		
-	}*/
+		if(other.hash == 0) {
+			ZobristHashing.setPositionHash(other);
+		}
+		return hash == other.hash;
+	}
 	
 }

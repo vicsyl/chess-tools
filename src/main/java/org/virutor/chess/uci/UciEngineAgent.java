@@ -47,7 +47,8 @@ public class UciEngineAgent implements GameServerTemp, InfoListener, UiGameListe
 	public UciEngineAgent(byte color, String path, String name) {
 		this.name = name;
 		this.color = color;
-		uciProtocol = new UciProtocol(path, this, engineInfo);
+		//TODO in the long, this is a hack.... 
+		uciProtocol = UciProtocolFactory.uciProtocolFactoryImpl.newUciProtocol(path, this, engineInfo);
 		uciProtocol.setInfoListener(this);
 	}
 	
@@ -173,14 +174,13 @@ public class UciEngineAgent implements GameServerTemp, InfoListener, UiGameListe
 		isThinking = false;
 		uciProtocol.stop();
 	}
-
 	
 	/**
 	 * Generic change to game in UI
 	 */
 	@Override
 	public void onGenericChange(UiGameListener.GameChangeType changeType) {
-		if(UiGame.instance.getGame().getCurrentGameNode().getNext() == null) {
+		if(UiGame.instance.getGame().getCurrentGameNode().getNext() == null && UiGame.instance.shouldAgentsPlayOnGenericChange) {
 			onDoMove(null);
 		}
 	}
@@ -190,11 +190,10 @@ public class UciEngineAgent implements GameServerTemp, InfoListener, UiGameListe
 	 */
 	@Override
 	public void onDoMove(Move move) {
-		if(UiGame.instance.getGame().getCurrentPosition().colorToMove == color) {
-			if(UiGame.instance.getGame().getCurrentGameNode().getGeneratedMoves().continuation == Continuation.POSSIBLE_MOVES) {  
-				uciProtocol.sendCommand(getPlayCommand());
-				isThinking = true;
-			}
+		
+		if(UiGame.instance.shouldAgentPlay(this)) {  
+			uciProtocol.sendCommand(getPlayCommand());
+			isThinking = true;			
 		}
 	}
 

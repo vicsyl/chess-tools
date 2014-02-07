@@ -9,6 +9,7 @@ import org.virutor.chess.model.Game;
 import org.virutor.chess.model.GameNode;
 import org.virutor.chess.model.Move;
 import org.virutor.chess.model.Position;
+import org.virutor.chess.model.Position.Continuation;
 import org.virutor.chess.model.generator.MoveGenerator.GeneratedMoves;
 import org.virutor.chess.model.io.LongAlgebraicMove;
 import org.virutor.chess.model.ui.GameData;
@@ -29,6 +30,15 @@ public class UiGame implements GameServerTemp {
 	private static final Logger LOG = Logger.getLogger(UiGame.class);
 
 	public static UiGame instance = new UiGame();	
+	
+	//TODO not very clean
+	public boolean shouldAgentsPlayOnGenericChange = true;
+	
+	public boolean shouldAgentPlay(UciEngineAgent uciEngineAgent) {
+		return getGame().getCurrentPosition().colorToMove == uciEngineAgent.getColor() &&
+			   getGame().getCurrentGameNode().getGeneratedMoves().continuation == Continuation.POSSIBLE_MOVES; 
+		
+	}	
 	
 	//TODO align with pgnGame properties...
 	private GameData gameData = new GameData();

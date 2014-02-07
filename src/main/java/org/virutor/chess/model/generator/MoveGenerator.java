@@ -137,6 +137,39 @@ public class MoveGenerator {
 		public List<Position> position = new ArrayList<Position>();
 		public Position.Continuation continuation = Position.Continuation.POSSIBLE_MOVES;
 		
+		@Override
+		public String toString() {
+			return "Continuation: " + continuation + "\nmoves: " + moves;			
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((continuation == null) ? 0 : continuation.hashCode());
+			result = prime * result + ((moves == null) ? 0 : moves.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			GeneratedMoves other = (GeneratedMoves) obj;
+			if (continuation != other.continuation)
+				return false;
+			if (moves == null) {
+				if (other.moves != null)
+					return false;
+			} else if (!moves.equals(other.moves))
+				return false;
+			return true;
+		}	
+		
 	}
 	
 	public static Position doMove(Position position, Move move) {		

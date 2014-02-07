@@ -168,7 +168,7 @@ public class UciProtocol {
 	}
 	
 	
-	private void processCommand(String line) {		
+	protected void processCommand(String line) {		
 		
 		if(line == null) {
 			return; //probably end of life but TODO make it better 
@@ -225,8 +225,6 @@ public class UciProtocol {
 				throw new IllegalArgumentException(e);
 			}
 		}
-			
-		
 	}
 	
 	public void sendCommand(UciCommand uciCommand) {
@@ -241,7 +239,7 @@ public class UciProtocol {
 	
 
 	
-	private void writeCommand(String command) {	
+	protected void writeCommand(String command) {	
 
 		if(command == null) {
 			throw new NullPointerException();

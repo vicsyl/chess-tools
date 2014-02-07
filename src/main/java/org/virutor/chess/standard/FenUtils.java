@@ -5,6 +5,7 @@ import static org.virutor.chess.model.Piece.PIECE_KING;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.virutor.chess.model.Field;
 import org.virutor.chess.model.Piece;
 import org.virutor.chess.model.Position;
@@ -14,9 +15,11 @@ public class FenUtils {
 	
 	public static final String INITIAL_POSITION_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"; 
 	
+	//TODO whay doesn't it work with optional groups like this? 
+	//PATTERN_STRING = " ....  (w|b) ([KQkq]+|\\-) ([a-h][1-8]|\\-) ([\\d]+)? ([\\d]+)?"	
 	private static final String PATTERN_STRING = "([rnbqkpRNBKQP1-8]+)/([rnbqkpRNBKQP1-8]+)/([rnbqkpRNBKQP1-8]+)/([rnbqkpRNBKQP1-8]+)/" +
 												"([rnbqkpRNBKQP1-8]+)/([rnbqkpRNBKQP1-8]+)/([rnbqkpRNBKQP1-8]+)/([rnbqkpRNBKQP1-8]+)" +
-												" (w|b) ([KQkq]+|\\-) ([a-h][1-8]|\\-) ([\\d]+) ([\\d]+)";
+												" (w|b) ([KQkq]+|\\-) ([a-h][1-8]|\\-)\\s*([\\d]*)\\s*([\\d]*)";
 
 	private static final Pattern PATTERN = Pattern.compile(PATTERN_STRING);
 
@@ -32,7 +35,7 @@ public class FenUtils {
 		Matcher matcher = PATTERN.matcher(fenString);
 		
 		if(!matcher.find() || matcher.groupCount() < 11) {
-			throw new IllegalArgumentException("Wrong fen format: " + fenString);			
+			throw new IllegalArgumentException("Wrong fen format: " + fenString);
 		}
 		
 		position.emptyBoard();
@@ -48,16 +51,16 @@ public class FenUtils {
 		setFenCastles(matcher.group(10), position);
 		setPossibleEp(matcher.group(11), position);
 		
-		position.fullMoveClock = 0;
+		position.fullMoveClock = 1;
 		position.halfMoveClock = 0;
 		
 		//TODO log if not...
-		if(matcher.groupCount() > 11) {
+		if(matcher.groupCount() > 11 && !StringUtils.isBlank(matcher.group(12))) {
 			position.halfMoveClock = Integer.parseInt(matcher.group(12));	
 		} 
 			
 		//TODO log if not...
-		if(matcher.groupCount() > 12) {
+		if(matcher.groupCount() > 12 && !StringUtils.isBlank(matcher.group(13))) {
 			position.fullMoveClock = Integer.parseInt(matcher.group(13));
 		}
 		

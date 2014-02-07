@@ -7,6 +7,20 @@ import org.virutor.chess.model.generator.MoveGenerator.GeneratedMoves;
 
 public class GameNode {
 
+		public int getVariationDepth() {
+			
+			int ret = 0;
+			GameNode gn = this;
+			
+			while(gn.previous != null) {
+				if(gn.previous.next != gn) {
+					ret++;
+				}
+				gn = gn.previous;
+			}
+			return ret;
+		}
+	
 		String sanMove;
 		Position position;
 		GeneratedMoves generatedMoves; 
@@ -109,5 +123,71 @@ public class GameNode {
 		void setOrdinalNumber(int ordinalNumber) {
 			this.ordinalNumber = ordinalNumber;
 		}
+		
+		@Override
+		public String toString() {
+			if(nextMove == null) {
+				return "move is null";
+			}
+			return nextMove.toString();
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((generatedMoves == null) ? 0 : generatedMoves.hashCode());
+			result = prime * result + ((next == null) ? 0 : next.hashCode());
+			result = prime * result + ((nextMove == null) ? 0 : nextMove.hashCode());
+			result = prime * result + ordinalNumber;
+			result = prime * result + ((position == null) ? 0 : position.hashCode());
+			result = prime * result + ((sanMove == null) ? 0 : sanMove.hashCode());
+			result = prime * result + ((variations == null) ? 0 : variations.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			GameNode other = (GameNode) obj;
+			if (generatedMoves == null) {
+				if (other.generatedMoves != null)
+					return false;
+			} else if (!generatedMoves.equals(other.generatedMoves))
+				return false;
+			if (next == null) {
+				if (other.next != null)
+					return false;
+			} else if (!next.equals(other.next))
+				return false;
+			if (nextMove == null) {
+				if (other.nextMove != null)
+					return false;
+			} else if (!nextMove.equals(other.nextMove))
+				return false;
+			if (ordinalNumber != other.ordinalNumber)
+				return false;
+			if (position == null) {
+				if (other.position != null)
+					return false;
+			} else if (!position.equals(other.position))
+				return false;
+			if (sanMove == null) {
+				if (other.sanMove != null)
+					return false;
+			} else if (!sanMove.equals(other.sanMove))
+				return false;
+			if (variations == null) {
+				if (other.variations != null)
+					return false;
+			} else if (!variations.equals(other.variations))
+				return false;
+			return true;
+		}		
 		
 }

@@ -86,7 +86,7 @@ public class Game {
 	 * @param gameNode
 	 * @return
 	 */
-	public GameNode doMove(Move move, GameNode gameNode) {
+	public static GameNode doMove(Move move, GameNode gameNode) {
 		
 		if(gameNode.generatedMoves.continuation != Position.Continuation.POSSIBLE_MOVES) {
 			throw new RuntimeException("This line has already a result :" + gameNode.generatedMoves.continuation);
@@ -198,5 +198,36 @@ public class Game {
 	public void setCurrentGameNodeToTail() {
 		setCurrentGameNode(getTailGameNode());
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((headGameNode == null) ? 0 : headGameNode.hashCode());
+		result = prime * result + ((this.result == null) ? 0 : this.result.hashCode());
+		result = prime * result + ((resultExplanation == null) ? 0 : resultExplanation.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Game other = (Game) obj;
+		if (headGameNode == null) {
+			if (other.headGameNode != null)
+				return false;
+		} else if (!headGameNode.equals(other.headGameNode))
+			return false;
+		if (result != other.result)
+			return false;
+		if (resultExplanation != other.resultExplanation)
+			return false;
+		return true;
+	}		
 	
 }

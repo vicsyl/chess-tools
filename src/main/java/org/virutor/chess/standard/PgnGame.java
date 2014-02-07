@@ -141,10 +141,13 @@ public class PgnGame {
 	}
 	
 	public static PgnGameSuite parse(InputStream istream) throws IOException {
-		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(istream));
-		PgnGameSuite ret = parse(bufferedReader);
-		IOUtils.closeQuietly(istream);
-		return ret;
+		try {
+			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(istream));
+			PgnGameSuite ret = parse(bufferedReader);
+			return ret;
+		} finally {			
+			IOUtils.closeQuietly(istream);
+		} 		
 	}
 	
 	private static PgnGameSuite parse(BufferedReader bufferedReader) throws IOException {
@@ -384,7 +387,15 @@ public class PgnGame {
 				
 			}
 			
-			stringBuilder.append(gameNode.getSanMove().toString() + " ");
+			//TODO unidentified bug....
+			if(gameNode.getSanMove() == null) {
+				LOG.error("san move == null! ");
+				if(gameNode.getPrevious() != null) {
+					LOG.error(" move that lead here: " + gameNode.getPrevious().getNextMove());	
+				}
+			} else {
+				stringBuilder.append(gameNode.getSanMove().toString() + " ");
+			}				
 			
 			if(formatNodeListener != null) {
 				formatNodeListener.afterNode(stringBuilder, gameNode);
@@ -396,8 +407,15 @@ public class PgnGame {
 				placeBlackOrdinal = !blackToMove;
 			}
 			
+			//TODO unidentified bug2 
+			if(gameNode.getNext() == null) {
+				LOG.error("game node == null! ");
+				LOG.error(" move that lead here: " + gameNode.getNextMove());				
+				break;
+			}
 			
 			gameNode = gameNode.getNext();
+
 				
 		}
 		
@@ -409,21 +427,15 @@ public class PgnGame {
 	
 	private void handleVariation(StringBuilder stringBuilder, GameNode startingGameNode, FormatNodeListener formatNodeListener) {
 		
-		stringBuilder.append("(");
-		
-		boolean firstFlag = true;
 		for(GameNode gameNode : startingGameNode.getVariations()) {
-			if(firstFlag) {
-				firstFlag = false;
-			} else {
-				//TODO experimental!!! #implementation #standard
-				stringBuilder.append("; "); 
-				LOG.debug("Don't know yet how to handle multiple variations from one node at once - see the standard");
-			}
+			stringBuilder.append("\n");
+			for(int i = 0; i < startingGameNode.getVariationDepth() + 1; i++) {
+				stringBuilder.append("  ");
+			}		
+			stringBuilder.append("(");		
 			appendMoveText(stringBuilder, gameNode, false, formatNodeListener);			
+			stringBuilder.append(") ");
 		}
-		
-		stringBuilder.append(") ");
 		
 	}
 	
@@ -477,20 +489,6 @@ public class PgnGame {
 	public void setBlack(String black) {
 		properties.put(PROPERTY_BLACK, black);
 	}
-	
-	/*
-	public String getSite() {
-		return site;
-	}
-
-	public void setSite(String site) {
-		this.site = site;
-	}
-
-
-
-
-	*/
 
 	public Game getGame() {
 		return game;
@@ -519,5 +517,53 @@ public class PgnGame {
 		properties.put(key, value);		
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((game == null) ? 0 : game.hashCode());
+		result = prime * result + ((properties == null) ? 0 : properties.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		PgnGame other = (PgnGame) obj;
+		if (game == null) {
+			if (other.game != null)
+				return false;
+		} else if (!game.equals(other.game))
+			return false;
+		if (properties == null) {
+			if (other.properties != null)
+				return false;
+		} else {
+			
+			//my code.... Map.equals doesn't work.... has to compare string representation of values
+			if(other.properties == null) {
+				return false;
+			}
+			if(properties.size() != other.properties.size()) {
+				return false;
+			}
+			for(String key : properties.keySet()) {
+				//this checks for null entries, but this check is skipped for this.properties 
+				if(other.properties.get(key) == null) {
+					return false;
+				}
+				if(!other.properties.get(key).toString().equals(properties.get(key).toString())) {
+					return false;
+				}
+			}
+			
+		}
+		return true;
+	}	
 	
 }

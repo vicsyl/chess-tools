@@ -173,6 +173,9 @@ public class PgnGameTest {
 			assertExpectedValuesForGame(expectedValuesForGame, pgnGame);				
 		}		
 		
+		for(PgnGame pgnGame : pgnGamesOriginal.pgnGames) {
+			System.out.println("Position for current node:" + FenUtils.positionToFen(pgnGame.getGame().getCurrentGameNode().getPosition()));
+		}		
 	}
 	
 	@Test
