@@ -97,7 +97,7 @@ public class Game {
 
 		int index = gameNode.generatedMoves.moves.indexOf(move);
 		if(index == -1) {
-			throw new IllegalArgumentException("Cannot do this move");
+			throw new IllegalArgumentException("Cannot do move " + move + " at position: " + gameNode.position);
 		}
 		gameNode.nextMove = move;
 		
