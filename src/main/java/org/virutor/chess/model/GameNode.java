@@ -5,6 +5,9 @@ import java.util.List;
 
 import org.virutor.chess.model.generator.MoveGenerator.GeneratedMoves;
 
+/**
+ * Add result!
+ */
 public class GameNode {
 
 		public int getVariationDepth() {

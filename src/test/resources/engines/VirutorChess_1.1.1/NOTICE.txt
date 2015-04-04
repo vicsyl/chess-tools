@@ -1,0 +1,29 @@
+This product includes software developed by Virutor 
+
+This product makes use of and includes the libstdc++ library, distributed under 
+the terms of the GNU General Public License version 3
+
+This product makes use of and includes the pthreads-win32 library, 
+distributed under the terms of the GNU Lesser General Public License version 2.1
+
+This product makes use of and includes the libgcc library, distributed under 
+the terms of the GNU General Public License version 2
+
+In order to comply with this license, Virutor also distributes original sources 
+of these libraries. They are available through https://sites.google.com/site/virutor/, namely at:
+
+    http://dl.dropbox.com/u/51181647/virutorchess/windows/3rd_party_libs.zip
+
+Note that the source codes are identic to the ones available through the MinGW project, 
+namely:
+    
+pthreads-w32-2.8.0-3 available at:
+    
+    http://sourceforge.net/projects/mingw/files/MinGW/Base/pthreads-w32/pthreads-w32-2.8.0-3/pthreads-w32-2.8.0-3-mingw32-src.tar.lzma/download
+
+libstdc++v3 and libgcc as parts of MinGw GCC version 4.5.2-1 available at:
+    
+    http://sourceforge.net/projects/mingw/files/MinGW/Base/gcc/Version4/gcc-4.5.2-1/gcc-4.5.2-1-mingw32-src.tar.lzma/download
+
+
+

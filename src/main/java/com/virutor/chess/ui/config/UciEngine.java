@@ -22,7 +22,12 @@ public class UciEngine extends Player {
 	public String getPath() {
 		return properties.get(PATH_PROPERTY);		
 	}
-	
+
+	/**
+	 * TODO let it set explicitly? Isn't it better to call it by the filename first and then what it get via UCI?
+	 *
+	 * @param name
+	 */
 	@Override 
 	public void setName(String name) {
 		properties.put(ENGINE_PROPERTY, name);		

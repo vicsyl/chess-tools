@@ -19,7 +19,23 @@ public class Position implements Cloneable {
 		CHECK_MATE,
 		STALEMATE,
 		_50_MOVES_DRAW,
-		_3_FOLD_REPETITION
+		_3_FOLD_REPETITION;
+
+		public static Game.Result getForcedResult(byte colorToMove, Continuation continuation) {
+			switch (continuation) {
+				case POSSIBLE_MOVES:
+					return Game.Result.UNRESOLVED;
+				case _3_FOLD_REPETITION:
+				case _50_MOVES_DRAW:
+				case STALEMATE:
+					return Game.Result.DRAW;
+				case CHECK_MATE:
+					return colorToMove == COLOR_WHITE ? Game.Result.BLACK_WINS : Game.Result.WHITE_WINS;
+				default:
+					throw new RuntimeException("Unknown continuation:" + continuation);
+			}
+
+		}
 	}
 
 	public static final int A1 = 21;
@@ -157,7 +173,8 @@ public class Position implements Cloneable {
 
 	//TODO what about generated moves, too!!!!	
 	private Continuation continuationCache;
-	
+
+	@Deprecated //flawed: this won't capture 3 fold generation moves, use Node.gerenerated moves!!!
 	public Continuation getContinuation() {
 		if(continuationCache == null) {
 			continuationCache = MoveGenerator.generateMoves(this).continuation;

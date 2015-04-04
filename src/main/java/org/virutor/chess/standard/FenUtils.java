@@ -5,7 +5,7 @@ import static org.virutor.chess.model.Piece.PIECE_KING;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.virutor.chess.model.Field;
 import org.virutor.chess.model.Piece;
 import org.virutor.chess.model.Position;

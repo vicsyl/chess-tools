@@ -1,15 +1,15 @@
 package org.virutor.chess.uci;
 
+import org.apache.commons.lang3.StringUtils;
+import org.virutor.chess.model.io.LongAlgebraicMove;
+import org.virutor.chess.uci.ComputationInfoScore.ComputationInfoScorePropertyParser;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.commons.lang.StringUtils;
-import org.virutor.chess.model.io.LongAlgebraicMove;
-import org.virutor.chess.uci.ComputationInfoScore.ComputationInfoScorePropertyParser;
 
 
 

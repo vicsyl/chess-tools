@@ -159,6 +159,7 @@ public class UciEngineAgent implements GameServerTemp, InfoListener, UiGameListe
 	
 	/**
 	 * quit the engine
+	 * TODO add some method that will wait some tome for the process to quit!!
 	 */
 	public void quit() {
 		isThinking = false;

@@ -32,7 +32,7 @@ public class TimerController implements UiGameListener {
 	private long remainingTime = -1;
 	private long lastTimeStarted;
 
-	private void cancelTimer() {
+	public void cancelTimer() {
 		if (timer != null) {
 			timer.cancel();
 		}

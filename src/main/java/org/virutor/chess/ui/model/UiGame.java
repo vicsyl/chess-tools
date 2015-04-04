@@ -18,6 +18,7 @@ import org.virutor.chess.standard.PgnGame;
 import org.virutor.chess.uci.GameServerTemp;
 import org.virutor.chess.uci.InfoListener;
 import org.virutor.chess.uci.UciEngineAgent;
+import org.virutor.chess.uci.UciEngineAgent.State;
 
 
 /**
@@ -51,11 +52,14 @@ public class UiGame implements GameServerTemp {
 	private List<InfoListener> infoListeners = new ArrayList<InfoListener>();
 
 	private List<UciEngineAgent> uciAgents = new ArrayList<UciEngineAgent>();
-	
+
+	//TODO what does it even mean, why do I need to quit the agents?!
 	public void addUciEngineAgent(UciEngineAgent uciEngineAgent) {
 		if(!uciAgents.isEmpty()) {
 			for(UciEngineAgent uciAgent : uciAgents) {
-				uciAgent.quit();
+				if(uciAgent.getState() == State.STARTED) {
+					uciAgent.quit();
+				}
 			}
 		}		
 		uciAgents.add(uciEngineAgent);
@@ -65,6 +69,10 @@ public class UiGame implements GameServerTemp {
 	public void removeUciEngineAgent(UciEngineAgent uciEngineAgent) {
 		uciAgents.remove(uciEngineAgent);
 		listeners.remove(uciEngineAgent);
+	}
+
+	public void removeListener(UiGameListener uiGameListener) {
+		listeners.remove(uiGameListener);
 	}
 	
 	public List<UciEngineAgent> getUciAgents() {
@@ -192,6 +200,14 @@ public class UiGame implements GameServerTemp {
 	public void setNode(GameNode gameNode) {
 		pgnGame.getGame().setCurrentGameNode(gameNode);
 		notifyListeners(UiGameListener.GameChangeType.COMPLETE_CHANGE);
+	}
+
+	public void quit() {
+		TIMER_CONTROL_FOR_BLACK.cancelTimer();
+		TIMER_CONTROL_FOR_WHITE.cancelTimer();
+		for(UciEngineAgent uciEngineAgent : uciAgents) {
+			uciEngineAgent.quit();
+		}
 	}
 
 }

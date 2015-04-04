@@ -3,7 +3,7 @@ package org.virutor.chess.uci;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.virutor.chess.uci.UciOption.UciOptionType;
 import org.virutor.chess.uci.UciOption.UciOptionValueType;
 
