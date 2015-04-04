@@ -6,6 +6,7 @@ import org.virutor.chess.standard.time.TimeControl;
 
 
 //TODO solve the ambiguity between this and pgn properties...
+@Deprecated
 public class GameData {
 	
 	private String white;

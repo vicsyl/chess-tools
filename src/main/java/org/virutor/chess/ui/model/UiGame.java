@@ -1,10 +1,5 @@
 package org.virutor.chess.ui.model;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import org.apache.log4j.Logger;
 import org.virutor.chess.model.Game;
 import org.virutor.chess.model.GameNode;
 import org.virutor.chess.model.Move;
@@ -15,22 +10,21 @@ import org.virutor.chess.model.io.LongAlgebraicMove;
 import org.virutor.chess.model.ui.GameData;
 import org.virutor.chess.server.TimerController;
 import org.virutor.chess.standard.PgnGame;
-import org.virutor.chess.uci.GameServerTemp;
 import org.virutor.chess.uci.InfoListener;
 import org.virutor.chess.uci.UciEngineAgent;
 import org.virutor.chess.uci.UciEngineAgent.State;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 
 /**
  * TODO: synchronization
- * @author vaclav
- *
  */
-public class UiGame implements GameServerTemp {
+public class UiGame {
 	
-	private static final Logger LOG = Logger.getLogger(UiGame.class);
-
-	public static UiGame instance = new UiGame();	
+	public static UiGame instance = new UiGame();
 	
 	//TODO not very clean
 	public boolean shouldAgentsPlayOnGenericChange = true;
@@ -88,17 +82,17 @@ public class UiGame implements GameServerTemp {
 	}
 
 	//TODO go back to Game !!! 
-	private PgnGame pgnGame = new PgnGame(null);	
-			
+	private PgnGame pgnGame = new PgnGame(null);
+
+	//TODO align with pgnGame properties...
+	@Deprecated
 	public GameData getGameData() {
 		return gameData;
 	}
 	
 	public void addListener(UiGameListener uiGameListener) {
-		
-			listeners.add(uiGameListener);
-		
-	} 
+		listeners.add(uiGameListener);
+	}
 	
 	private UiGame() {		
 		
@@ -110,23 +104,11 @@ public class UiGame implements GameServerTemp {
 		addListener(TIMER_CONTROL_FOR_BLACK);		
 	}
 	
-	
-	/*
-	//or use UiGameListener???
-	private void setupTime() {
-		TIMER_CONTROL_FOR_WHITE.resetTimeControl();
-		TIMER_CONTROL_FOR_BLACK.resetTimeControl();
-
-	}*/
-	
-	
-	
 	public void notifyListeners(UiGameListener.GameChangeType change) {
 		
 		for(UiGameListener listener : listeners) {
 			listener.onGenericChange(change);
 		}
-				
 	}
 	
 	public void notifyListenersButAgents(UiGameListener.GameChangeType change) {
@@ -136,13 +118,9 @@ public class UiGame implements GameServerTemp {
 				listener.onGenericChange(change);
 			}
 		}
-				
 	}
-	
-	
-	
+
 	//TODO delegate / join thwo methods (play / doMove) 
-	@Override
 	public void play(LongAlgebraicMove laMove) throws InvalidMoveException {
 
 		GeneratedMoves moves = pgnGame.getGame().getCurrentGameNode().getGeneratedMoves();
@@ -152,10 +130,9 @@ public class UiGame implements GameServerTemp {
 				return;
 			}
 		}
-		throw new InvalidMoveException();
+		throw new InvalidMoveException("Invalid move: " + laMove);
 	}
 
-	
 	public void doMove(Move move) throws InvalidMoveException {
 		
 		pgnGame.getGame().doMove(move);
@@ -170,13 +147,10 @@ public class UiGame implements GameServerTemp {
 		}
 	}
 
-	//move somewhere else???
-	@Override
 	public void notifyReady() {
-		// TODO Auto-generated method stub
-		
+		//TODO - called by uci engine when it's ready
 	}
-	
+
 	//TODO ??
 	public PgnGame getPgnGame() {
 		return pgnGame;
@@ -209,5 +183,4 @@ public class UiGame implements GameServerTemp {
 			uciEngineAgent.quit();
 		}
 	}
-
 }

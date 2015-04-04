@@ -1,26 +1,13 @@
 package org.virutor.chess.uci;
 
-import static org.virutor.chess.uci.UciConstants.BEST_MOVE;
-import static org.virutor.chess.uci.UciConstants.ID;
-import static org.virutor.chess.uci.UciConstants.INFO;
-import static org.virutor.chess.uci.UciConstants.OPTION;
-import static org.virutor.chess.uci.UciConstants.READY_OK;
-import static org.virutor.chess.uci.UciConstants.UCI_OK;
-
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-
 import org.apache.log4j.Logger;
 import org.virutor.chess.model.io.LongAlgebraicMove;
-import org.virutor.chess.uci.GameServerTemp.InvalidMoveException;
 import org.virutor.chess.uci.commands.UciCommand;
+import org.virutor.chess.ui.model.InvalidMoveException;
 
+import java.io.*;
 
+import static org.virutor.chess.uci.UciConstants.*;
 
 
 /**
@@ -41,7 +28,7 @@ public class UciProtocol {
 	private String path;
 	private final EngineInfo engineInfo;
 	
-	private GameServerTemp gameServer;
+	private UciEngineAgent uciEngineAgent;
 	private InfoListener infoListener;
 	
 	private Process uciEngineProcess;
@@ -52,14 +39,14 @@ public class UciProtocol {
 	//state 
 	private volatile boolean quit;
 	
-	public UciProtocol(String path, GameServerTemp gameServer, EngineInfo engineInfo) {
+	public UciProtocol(String path, UciEngineAgent uciEngineAgent, EngineInfo engineInfo) {
 		this.path = path;
-		this.gameServer = gameServer;
+		this.uciEngineAgent = uciEngineAgent;
 		this.engineInfo = engineInfo;
 	}
 	
-	public UciProtocol(String path, GameServerTemp gameServer) {
-		this(path, gameServer, new EngineInfo());
+	public UciProtocol(String path, UciEngineAgent uciEngineAgent) {
+		this(path, uciEngineAgent, new EngineInfo());
 	}
 	
 	public UciProtocol(String path) {
@@ -78,8 +65,8 @@ public class UciProtocol {
 		this.infoListener = infoListener;
 	}
 
-	public void setGameServer(GameServerTemp gameServer) {
-		this.gameServer = gameServer;
+	public void setUiGame(UciEngineAgent uciEngineAgent) {
+		this.uciEngineAgent = uciEngineAgent;
 	}
 
 	public EngineInfo getEngineInfo() {
@@ -201,7 +188,7 @@ public class UciProtocol {
 			
 		} else if(READY_OK.equals(firstWord)) {
 			
-			gameServer.notifyReady();	
+			uciEngineAgent.notifyReady();
 			
 		} else if(INFO.equals(firstWord)) {
 			
@@ -219,7 +206,7 @@ public class UciProtocol {
 		} else if(BEST_MOVE.equals(firstWord)) {			
 			
 			try {
-				gameServer.play(new LongAlgebraicMove(words[1]));
+				uciEngineAgent.play(new LongAlgebraicMove(words[1]));
 			} catch (InvalidMoveException e) {
 				// TODO
 				throw new IllegalArgumentException(e);

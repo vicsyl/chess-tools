@@ -12,6 +12,7 @@ import org.virutor.chess.model.Position;
 import org.virutor.chess.model.Position.Continuation;
 import org.virutor.chess.model.io.LongAlgebraicMove;
 import org.virutor.chess.uci.commands.PlayCommand;
+import org.virutor.chess.ui.model.InvalidMoveException;
 import org.virutor.chess.ui.model.UiGame;
 import org.virutor.chess.ui.model.UiGameListener;
 
@@ -21,7 +22,7 @@ import org.virutor.chess.ui.model.UiGameListener;
  * @author vaclav
  *
  */
-public class UciEngineAgent implements GameServerTemp, InfoListener, UiGameListener {
+public class UciEngineAgent implements InfoListener, UiGameListener {
 
 	private static final Logger LOG = LogManager.getLogger(UciEngineAgent.class);
 	
