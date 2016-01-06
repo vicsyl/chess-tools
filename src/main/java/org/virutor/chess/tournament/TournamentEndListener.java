@@ -1,4 +1,4 @@
-package com.virutor.chess.tournament;
+package org.virutor.chess.tournament;
 
 import java.util.List;
 

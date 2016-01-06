@@ -1,4 +1,4 @@
-package com.virutor.chess.model.generator;
+package org.virutor.chess.generator;
 
 import static org.virutor.chess.model.Move.CASTLE_EP_FLAG_EP;
 import static org.virutor.chess.model.Move.CASTLE_EP_FLAG_NO_CASTLE;
@@ -20,7 +20,7 @@ import org.virutor.chess.model.generator.MoveGenerator;
 import org.virutor.chess.model.generator.MoveGenerator.GeneratedMoves;
 import org.virutor.chess.standard.FenUtils;
 
-import com.virutor.chess.model.UIUtils;
+import org.virutor.chess.model.UIUtils;
 
 @RunWith(Parameterized.class)
 public class PerftTests {

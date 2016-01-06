@@ -1,4 +1,4 @@
-package com.virutor.chess.ui.config;
+package org.virutor.chess.config;
 
 public abstract class Player {
 	

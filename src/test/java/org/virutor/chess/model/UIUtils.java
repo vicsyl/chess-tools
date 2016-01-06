@@ -1,4 +1,4 @@
-package com.virutor.chess.model;
+package org.virutor.chess.model;
 
 import org.virutor.chess.model.Move;
 import org.virutor.chess.model.Position;

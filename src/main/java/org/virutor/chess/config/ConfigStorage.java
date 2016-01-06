@@ -1,4 +1,4 @@
-package com.virutor.chess.ui.config;
+package org.virutor.chess.config;
 
 import java.util.Arrays;
 import java.util.List;

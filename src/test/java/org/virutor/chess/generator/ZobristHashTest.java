@@ -1,4 +1,4 @@
-package com.virutor.chess.model.generator;
+package org.virutor.chess.generator;
 
 import java.util.Arrays;
 import java.util.Collection;

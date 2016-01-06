@@ -5,8 +5,8 @@ import org.virutor.chess.model.Position;
 import org.virutor.chess.standard.PgnGame;
 import org.virutor.chess.ui.model.UiGame;
 
-import com.virutor.chess.ui.config.Config;
-import com.virutor.chess.ui.config.UciEngine;
+import org.virutor.chess.config.Config;
+import org.virutor.chess.config.UciEngine;
 
 public class UciUtils {
 

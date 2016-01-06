@@ -1,7 +1,7 @@
-package com.virutor.chess.tournament;
+package org.virutor.chess.tournament;
 
 import com.google.common.base.Preconditions;
-import com.virutor.chess.ui.config.UciEngine;
+import org.virutor.chess.config.UciEngine;
 import org.apache.commons.collections.CollectionUtils;
 import org.virutor.chess.standard.time.TimeControl;
 

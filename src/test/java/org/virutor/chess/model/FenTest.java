@@ -1,4 +1,4 @@
-package com.virutor.chess.model;
+package org.virutor.chess.model;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -9,7 +9,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import org.virutor.chess.model.Position;
 import org.virutor.chess.standard.FenUtils;
 
 @RunWith(Parameterized.class)

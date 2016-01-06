@@ -1,9 +1,9 @@
 package org.virutor.chess.headless;
 
-import com.virutor.chess.tournament.TournamentData;
-import com.virutor.chess.tournament.TournamentEndListener;
-import com.virutor.chess.tournament.TournamentManager;
-import com.virutor.chess.ui.config.UciEngine;
+import org.virutor.chess.tournament.TournamentData;
+import org.virutor.chess.tournament.TournamentEndListener;
+import org.virutor.chess.tournament.TournamentManager;
+import org.virutor.chess.config.UciEngine;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.virutor.chess.standard.time.IncrementalTimeControl;
 import org.virutor.chess.standard.time.TimeControl;

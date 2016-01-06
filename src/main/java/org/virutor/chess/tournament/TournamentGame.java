@@ -1,6 +1,6 @@
-package com.virutor.chess.tournament;
+package org.virutor.chess.tournament;
 
-import com.virutor.chess.ui.config.UciEngine;
+import org.virutor.chess.config.UciEngine;
 import org.virutor.chess.model.Game.Result;
 
 import java.util.ArrayList;

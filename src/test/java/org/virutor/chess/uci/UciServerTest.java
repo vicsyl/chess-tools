@@ -1,4 +1,4 @@
-package com.virutor.chess.uci;
+package org.virutor.chess.uci;
 
 import java.io.IOException;
 
