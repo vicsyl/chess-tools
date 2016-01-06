@@ -1,11 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.virutor.chess</groupId>
-	<artifactId>java-core</artifactId>
+	<groupId>org.virutor.chess</groupId>
+	<artifactId>chess-tools</artifactId>
 	<packaging>jar</packaging>
-	<version>1.2-SNAPSHOT</version>
-	<name>java-core</name>
+	<version>1.0-SNAPSHOT</version>
+	<name>chess-tools</name>
 	<dependencies>
 		<dependency>
 			<groupId>commons-collections</groupId>
