@@ -6,6 +6,7 @@ import java.util.List;
 import org.virutor.chess.model.generator.MoveGenerator.GeneratedMoves;
 
 /**
+ * TODO: refactor and test!
  * Add result!
  */
 public class GameNode {

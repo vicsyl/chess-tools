@@ -7,11 +7,6 @@ import junit.framework.Assert;
 import org.junit.Test;
 import org.virutor.chess.model.Game;
 import org.virutor.chess.model.Position;
-import org.virutor.chess.standard.FenPropertyHandler;
-import org.virutor.chess.standard.FenUtils;
-import org.virutor.chess.standard.PgnGame;
-import org.virutor.chess.standard.PgnGameSuite;
-import org.virutor.chess.standard.SetUpHandler;
 
 public class NotParametrizedPgnTests {
 

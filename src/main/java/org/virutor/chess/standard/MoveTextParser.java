@@ -24,7 +24,7 @@ public class MoveTextParser {
 	public MoveTextParser(StringBuilder stringBuilder, Game game) {
 		this.stringBuilder = stringBuilder;
 		this.game = game;
-	};
+	}
 	
 	public void parse() {
 		parse(game.getHeadGameNode());

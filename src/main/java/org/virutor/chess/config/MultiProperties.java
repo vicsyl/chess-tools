@@ -18,8 +18,13 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
+//FIXME redo completely or even better build upon something off the shelf
 public class MultiProperties {
+
+	private static final Logger logger = LogManager.getLogger(MultiProperties.class);
 
 	public static final List<String> ENGINES_PLAYERS_PROPRS = Arrays.asList("engine", "player");
 	
@@ -75,10 +80,9 @@ public class MultiProperties {
 				ret.put(pr, new ArrayList<Map<String, String>>());
 			}
 			
-			String lastMainProp = null;
 			Map<String, String> lastMainProps = null;
 			
-			String line = null;
+			String line;
 			while((line = bufferedReader.readLine()) != null) {
 				
 				if(StringUtils.isBlank(line)) {
@@ -87,8 +91,7 @@ public class MultiProperties {
 				
 				Matcher matcher = PROPERTY_PATTERN.matcher(line);
 				if(!matcher.find()) {
-					//TODO what to do?
-					//let's ignore it for now
+					//FIXME: let's ignore it for now, but it's no good
 					continue;
 				}
 				String key = matcher.group(1).trim();
@@ -107,7 +110,9 @@ public class MultiProperties {
 			return ret;
 			
 		} catch (Exception e) {
-			return null;		 
+			logger.error("Caught exception", e);
+			//FIXME: this is bad, but in order to fix it I have to change the API
+			return null;
 		} finally {
 			IOUtils.closeQuietly(inputStream);
 		}

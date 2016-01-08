@@ -12,7 +12,11 @@ import org.virutor.chess.model.generator.ZobristHashing;
 import org.virutor.chess.standard.FenUtils;
 
 
-public class Position implements Cloneable {
+/**
+ * Uses classical 10x12 board representation,
+ * see https://chessprogramming.wikispaces.com/10x12+Board
+ */
+public class Position {
 	
 	public static enum Continuation {
 		POSSIBLE_MOVES,
@@ -126,7 +130,7 @@ public class Position implements Cloneable {
 		null, null, null, null, null, null, null, null, null, null, 
 	};
 
-	public Field getFieldFrom8x8(int row, int file) {
+	public Field getField(int row, int file) {
 		if(row < 1 || row > 8) {
 			throw new IllegalArgumentException("row out of range (" + row + ")");
 		}

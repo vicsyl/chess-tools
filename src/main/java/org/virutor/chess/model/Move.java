@@ -59,6 +59,7 @@ public class Move {
 	}
 	
 	/**
+	 * TODO: can some standard (SanMove?) be used?
 	 * This is mostly to help when debugging
 	 */
 	@Override

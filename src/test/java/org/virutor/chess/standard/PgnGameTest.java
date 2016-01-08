@@ -21,10 +21,6 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.virutor.chess.model.Game.Result;
 import org.virutor.chess.model.Game.ResultExplanation;
-import org.virutor.chess.standard.PgnDate;
-import org.virutor.chess.standard.PgnGame;
-import org.virutor.chess.standard.PgnGameSuite;
-import org.virutor.chess.standard.PgnRound;
 
 @RunWith(Parameterized.class)
 public class PgnGameTest {

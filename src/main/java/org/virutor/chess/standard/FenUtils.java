@@ -198,7 +198,7 @@ public class FenUtils {
 		for(int row = 8; row > 0; row--) {			
 			int lastFile = 0;
 			for(int file = 1; file < 9; file++) {
-				Field f = position.getFieldFrom8x8(row, file);				
+				Field f = position.getField(row, file);
 				if(f.color != Position.COLOR_FREE) {
 					if(file - lastFile > 1) {
 						sb.append(file - lastFile - 1);

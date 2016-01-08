@@ -3,7 +3,6 @@ package org.virutor.chess.model;
 import junit.framework.Assert;
 
 import org.junit.Test;
-import org.virutor.chess.model.Position;
 import org.virutor.chess.standard.FenUtils;
 
 public class FenNotParametrizedTest {
