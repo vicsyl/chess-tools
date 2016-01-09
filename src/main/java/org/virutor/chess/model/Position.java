@@ -187,7 +187,6 @@ public class Position {
 		
 	}
 	
-	//public Piece[] pieces = new Piece[32];
 	public Field[] board = new Field[120];
 	
 	public int[] kingIndices = new int[]{OFF_BOARD, OFF_BOARD}; 
@@ -196,9 +195,8 @@ public class Position {
 	public boolean[] castles = new boolean[4];
 	public int possibleEpIndex = OFF_BOARD;
 
-	//??
 	public int halfMoveClock = 0;
-	public int fullMoveClock = 0;
+	public int fullMoveClock = 1;
 	
 	public long hash;	
 	
