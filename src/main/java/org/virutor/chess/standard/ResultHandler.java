@@ -1,12 +1,13 @@
 package org.virutor.chess.standard;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.virutor.chess.model.Game;
 import org.virutor.chess.model.Game.Result;
 
 public class ResultHandler implements PropertyHandler {
 
-	private static final Logger LOG = Logger.getLogger(ResultHandler.class); 
+	private static final Logger LOG = LogManager.getLogger(ResultHandler.class);
 
 	public static final ResultHandler INSTANCE = new ResultHandler();		
 	

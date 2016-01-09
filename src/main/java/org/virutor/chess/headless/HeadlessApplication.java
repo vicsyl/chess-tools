@@ -4,7 +4,6 @@ import org.virutor.chess.tournament.TournamentData;
 import org.virutor.chess.tournament.TournamentEndListener;
 import org.virutor.chess.tournament.TournamentManager;
 import org.virutor.chess.config.UciEngine;
-import org.apache.log4j.xml.DOMConfigurator;
 import org.virutor.chess.standard.time.IncrementalTimeControl;
 import org.virutor.chess.standard.time.TimeControl;
 
@@ -118,11 +117,8 @@ public class HeadlessApplication {
 
     public void startTournament(TournamentData tournamentData, TournamentEndListener tournamentEndListener) {
 
-        DOMConfigurator.configure(HeadlessApplication.class.getResource("/headless/headless-log4j.xml").getPath());
-
         TournamentManager manager = new TournamentManager(tournamentData, tournamentEndListener);
         manager.start();
-
     }
 
 }

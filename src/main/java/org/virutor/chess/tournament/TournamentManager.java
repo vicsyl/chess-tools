@@ -1,8 +1,8 @@
 package org.virutor.chess.tournament;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.virutor.chess.config.UciEngine;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.virutor.chess.model.Game;
 import org.virutor.chess.model.Game.Result;
 import org.virutor.chess.model.Move;

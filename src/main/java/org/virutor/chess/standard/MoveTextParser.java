@@ -4,7 +4,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.virutor.chess.model.Game;
 import org.virutor.chess.model.Game.ResultExplanation;
 import org.virutor.chess.model.GameNode;
@@ -13,7 +14,7 @@ import org.virutor.chess.model.Position.Continuation;
 
 public class MoveTextParser {
 
-	private static final Logger LOG = Logger.getLogger(MoveTextParser.class); 
+	private static final Logger LOG = LogManager.getLogger(MoveTextParser.class);
 	
 	private static final Pattern PATTERN_WORD = Pattern.compile("^\\S+");
 	private static final Pattern PATTERN_WHITESPACE = Pattern.compile("^\\s+");	

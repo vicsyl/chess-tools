@@ -1,6 +1,7 @@
 package org.virutor.chess.uci;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.virutor.chess.model.io.LongAlgebraicMove;
 import org.virutor.chess.uci.commands.UciCommand;
 import org.virutor.chess.ui.model.InvalidMoveException;
@@ -21,9 +22,9 @@ import static org.virutor.chess.uci.UciConstants.*;
  */
 public class UciProtocol {
 	
-	
-	private static final Logger LOG = Logger.getLogger(UciProtocol.class + ".second"); 
-	private static final Logger UCI_LOG = Logger.getLogger(UciProtocol.class); 
+	//FIXME: a) this is most likely broken b) it doesn't look good
+	private static final Logger LOG = LogManager.getLogger(UciProtocol.class + ".second");
+	private static final Logger UCI_LOG = LogManager.getLogger(UciProtocol.class);
 	
 	private String path;
 	private final EngineInfo engineInfo;

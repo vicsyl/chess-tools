@@ -4,12 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.virutor.chess.model.GameNode;
 import org.virutor.chess.model.Move;
 import org.virutor.chess.model.Position;
-import org.virutor.chess.model.Position.Continuation;
 import org.virutor.chess.model.io.LongAlgebraicMove;
 import org.virutor.chess.uci.commands.PlayCommand;
 import org.virutor.chess.ui.model.InvalidMoveException;

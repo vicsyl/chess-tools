@@ -24,7 +24,8 @@ import java.util.regex.Pattern;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.virutor.chess.model.Game;
 import org.virutor.chess.model.Game.Result;
 import org.virutor.chess.model.Game.ResultExplanation;
@@ -40,7 +41,7 @@ import org.virutor.chess.standard.time.TimeControl;
  */
 public class PgnGame {
 
-	private static final Logger LOG = Logger.getLogger(PgnGame.class); 
+	private static final Logger LOG = LogManager.getLogger(PgnGame.class);
 	
 	static final Map<String, Game.Result> STRING_RESULTS = new HashMap<String, Game.Result>();
 	static final Map<Result, String> RESULT_STRING = new HashMap<Game.Result, String>();
