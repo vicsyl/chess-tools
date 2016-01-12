@@ -1,5 +1,14 @@
 package org.virutor.chess.standard;
 
+import junit.framework.Assert;
+import org.apache.commons.io.IOUtils;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+import org.virutor.chess.model.Game.Result;
+import org.virutor.chess.model.Game.ResultExplanation;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -11,16 +20,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import junit.framework.Assert;
-
-import org.apache.commons.io.IOUtils;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
-import org.virutor.chess.model.Game.Result;
-import org.virutor.chess.model.Game.ResultExplanation;
 
 @RunWith(Parameterized.class)
 public class PgnGameTest {
@@ -121,8 +120,8 @@ public class PgnGameTest {
 		InputStream istream = new ByteArrayInputStream(stringRepresentation.getBytes());
 		
 		PgnGameSuite pgnGamesCopy = PgnGame.parse(istream);
-		
-		Assert.assertEquals(pgnGamesOriginal.pgnGames, pgnGamesCopy.pgnGames);
+
+		Assert.assertEquals(pgnGamesOriginal, pgnGamesCopy);
 		
 	}
 	
