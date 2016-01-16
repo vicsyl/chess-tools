@@ -1,23 +1,18 @@
 package org.virutor.chess.config;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.virutor.chess.standard.PgnGame;
+import org.virutor.chess.standard.PgnGameSuite;
+import org.virutor.chess.ui.model.UiGame;
+
+import java.io.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.virutor.chess.standard.PgnGame;
-import org.virutor.chess.standard.PgnGameSuite;
-import org.virutor.chess.ui.model.UiGame;
 
 public class DefaultConfigStorageImpl extends ConfigStorage {
 

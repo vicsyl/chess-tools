@@ -4,7 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.virutor.chess.application.Services;
 import org.virutor.chess.model.Game;
 import org.virutor.chess.model.Position;
@@ -18,7 +19,7 @@ import org.virutor.chess.ui.model.UiGame;
 
 public abstract class ConfigStorage {
 
-	private static final Logger log = Logger.getLogger(ConfigStorage.class); 
+	private static final Logger log = LogManager.getLogger(ConfigStorage.class);
 	
 	private static final String UNKNOWN_PLAYER = "UNKNOWN_PLAYER"; 
 	

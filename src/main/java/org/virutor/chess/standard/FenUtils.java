@@ -6,6 +6,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.virutor.chess.model.Field;
 import org.virutor.chess.model.Piece;
 import org.virutor.chess.model.Position;
@@ -14,8 +16,10 @@ import org.virutor.chess.model.generator.ZobristHashing;
 public class FenUtils {
 	
 	public static final String INITIAL_POSITION_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"; 
-	
-	//TODO whay doesn't it work with optional groups like this? 
+
+	private static final Logger logger = LogManager.getLogger(FenUtils.class);
+
+	//TODO why doesn't it work with optional groups like this?
 	//PATTERN_STRING = " ....  (w|b) ([KQkq]+|\\-) ([a-h][1-8]|\\-) ([\\d]+)? ([\\d]+)?"	
 	private static final String PATTERN_STRING = "([rnbqkpRNBKQP1-8]+)/([rnbqkpRNBKQP1-8]+)/([rnbqkpRNBKQP1-8]+)/([rnbqkpRNBKQP1-8]+)/" +
 												"([rnbqkpRNBKQP1-8]+)/([rnbqkpRNBKQP1-8]+)/([rnbqkpRNBKQP1-8]+)/([rnbqkpRNBKQP1-8]+)" +
@@ -23,13 +27,20 @@ public class FenUtils {
 
 	private static final Pattern PATTERN = Pattern.compile(PATTERN_STRING);
 
-
 	public static Position getPositionFromFen(String fenString) { 
 		Position position = new Position();
 		setFen(fenString, position);
 		return position;
 	}
 
+	/**
+	 * Parses FEN String (see http://www.thechessdrum.net/PGN_Reference.txt or http://kirill-kryukov.com/chess/doc/fen.html)
+	 * and sets the passed position accordingly. Accepts even non-compliant strings that
+	 * are missing the fullmove number or halfmove clock, which is sometimes the case
+	 *
+	 * @param fenString FEN String
+	 * @param position the position to be updated
+	 */
 	public static void setFen(String fenString, Position position) {
 		
 		Matcher matcher = PATTERN.matcher(fenString);
@@ -54,13 +65,13 @@ public class FenUtils {
 		position.fullMoveClock = 1;
 		position.halfMoveClock = 0;
 		
-		//TODO log if not...
 		if(matcher.groupCount() > 11 && !StringUtils.isBlank(matcher.group(12))) {
-			position.halfMoveClock = Integer.parseInt(matcher.group(12));	
+			logger.warn("The fen string ({}) is missing the halfmove clock information, will use the default value of 0", fenString);
+			position.halfMoveClock = Integer.parseInt(matcher.group(12));
 		} 
 			
-		//TODO log if not...
 		if(matcher.groupCount() > 12 && !StringUtils.isBlank(matcher.group(13))) {
+			logger.warn("The fen string ({}) is missing the fullmove counter information, will use the default value of 1", fenString);
 			position.fullMoveClock = Integer.parseInt(matcher.group(13));
 		}
 		

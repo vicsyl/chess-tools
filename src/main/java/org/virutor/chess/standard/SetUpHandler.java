@@ -1,6 +1,7 @@
 package org.virutor.chess.standard;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.virutor.chess.model.Position;
 
 /**
@@ -10,7 +11,7 @@ import org.virutor.chess.model.Position;
  */
 public class SetUpHandler extends AbstractKeyCheckingPropertyHandler implements PropertyHandler {
 
-	private static final Logger LOG = Logger.getLogger(SetUpHandler.class); 
+	private static final Logger LOG = LogManager.getLogger(SetUpHandler.class);
 	
 	public static final String SET_UP = "SetUp"; 
 	

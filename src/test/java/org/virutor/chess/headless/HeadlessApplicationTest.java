@@ -1,28 +1,31 @@
 package org.virutor.chess.headless;
 
-import org.virutor.chess.tournament.TournamentData;
-import org.virutor.chess.tournament.TournamentEndListener;
-import org.virutor.chess.tournament.TournamentGame;
-import org.virutor.chess.config.UciEngine;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
+import org.virutor.chess.config.UciEngine;
 import org.virutor.chess.standard.time.IncrementalTimeControl;
+import org.virutor.chess.tournament.TournamentData;
+import org.virutor.chess.tournament.TournamentEndListener;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.util.List;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.concurrent.CountDownLatch;
+import java.util.stream.Stream;
 
 public class HeadlessApplicationTest {
+
+    private static Logger logger = LogManager.getLogger(HeadlessApplicationTest.class);
 
     private static String AGENT_PATH = HeadlessApplication.class.getResource("/engines/VirutorChess_1.1.1/bin/VirutorChessUci_1.1.1.exe").getPath();
 
     private static UciEngine getUciEngine() {
         UciEngine ret = new UciEngine();
-        ret.setName("Virutor Chess 1.1.1");
         ret.setPath(AGENT_PATH);
+        //FIXME for the time being name is always the same as path
+        ret.setName(AGENT_PATH);
         return ret;
     }
 
@@ -40,8 +43,8 @@ public class HeadlessApplicationTest {
         Assert.assertEquals(1, tournamentData.getTimeControls().size());
         Assert.assertTrue(tournamentData.getTimeControls().get(0) instanceof IncrementalTimeControl);
         IncrementalTimeControl actualTimeControl = (IncrementalTimeControl)tournamentData.getTimeControls().get(0);
-        Assert.assertEquals(0, actualTimeControl.getBase());
-        Assert.assertEquals(15, actualTimeControl.getIncrement());
+        Assert.assertEquals(15, actualTimeControl.getBase());
+        Assert.assertEquals(0, actualTimeControl.getIncrement());
         Assert.assertEquals(2, tournamentData.getUciEngines().size());
         assertUciEngine(getUciEngine(), tournamentData.getUciEngines().get(0));
         assertUciEngine(getUciEngine(), tournamentData.getUciEngines().get(1));
@@ -53,30 +56,16 @@ public class HeadlessApplicationTest {
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         final Exception[] exceptions = new Exception[1];
 
-        TournamentEndListener listener = new TournamentEndListener() {
-            @Override
-            public void onTournamentEnd(List<TournamentGame> tournamentGames, String resultFileName) {
-                //TODO move to java 8 -
-                // a) resource try
-                // b) lambdas read lines
+        TournamentEndListener listener = (tournamentGames, resultFileName) -> {
 
-                BufferedReader bufferedReader = null;
-                try {
-                    bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(resultFileName)));
-                    String line;
-                    System.out.println("Saved to file " + resultFileName);
-                    System.out.println("Contents");
-                    while ((line = bufferedReader.readLine())!=null) {
-                        System.out.println(line);
-                    }
-                    bufferedReader.close();
-                    File file = new File(resultFileName);
-                    file.delete();
-                } catch (Exception e) {
-                    exceptions[0] = e;
-                } finally {
-                    countDownLatch.countDown();
-                }
+            try (Stream<String> lines = Files.lines(Paths.get(resultFileName))) {
+                lines.forEach(logger::info);
+                File file = new File(resultFileName);
+                file.delete();
+            } catch (Exception e) {
+                exceptions[0] = e;
+            } finally {
+                countDownLatch.countDown();
             }
         };
 
@@ -84,7 +73,6 @@ public class HeadlessApplicationTest {
         new HeadlessApplication().startTournament(tournamentData, listener);
         countDownLatch.await();
 
-        //TODO how to do it more elegantly?
         if(exceptions[0] != null) {
             throw exceptions[0];
         }
