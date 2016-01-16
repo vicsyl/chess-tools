@@ -7,7 +7,7 @@ import java.util.List;
 
 public class PgnGameSuite {
 
-    public List<PgnGame> pgnGames = new ArrayList<PgnGame>();
+    public List<PgnGame> pgnGames = new ArrayList<>();
 
     public void write(Writer writer) throws IOException {
         for (int i = 0; i < pgnGames.size(); i++) {
