@@ -7,7 +7,6 @@ import org.virutor.chess.model.Position;
 import org.virutor.chess.model.Position.Continuation;
 import org.virutor.chess.model.generator.MoveGenerator.GeneratedMoves;
 import org.virutor.chess.model.io.LongAlgebraicMove;
-import org.virutor.chess.model.ui.GameData;
 import org.virutor.chess.server.TimerController;
 import org.virutor.chess.standard.PgnGame;
 import org.virutor.chess.uci.InfoListener;
@@ -35,12 +34,8 @@ public class UiGame {
 		
 	}	
 	
-	//TODO align with pgnGame properties...
-	private GameData gameData = new GameData();
-
 	public final TimerController TIMER_CONTROL_FOR_WHITE = new TimerController(Position.COLOR_WHITE);
 	public final TimerController TIMER_CONTROL_FOR_BLACK = new TimerController(Position.COLOR_BLACK);
-	
 	
 	private List<UiGameListener> listeners = new ArrayList<UiGameListener>();
 	private List<InfoListener> infoListeners = new ArrayList<InfoListener>();
@@ -84,12 +79,6 @@ public class UiGame {
 	//TODO go back to Game !!! 
 	private PgnGame pgnGame = new PgnGame(null);
 
-	//TODO align with pgnGame properties...
-	@Deprecated
-	public GameData getGameData() {
-		return gameData;
-	}
-	
 	public void addListener(UiGameListener uiGameListener) {
 		listeners.add(uiGameListener);
 	}

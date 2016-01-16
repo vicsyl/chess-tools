@@ -94,7 +94,7 @@ public class TournamentManager implements UiGameListener {
         setAgentColorAndStart(Position.COLOR_WHITE, currentGame.getWhite());
         setAgentColorAndStart(Position.COLOR_BLACK, currentGame.getBlack());
 
-        UiGame.instance.getGameData().setTimeControls(tournamentData.getTimeControls());
+        UiGame.instance.getPgnGame().setTimeControls(tournamentData.getTimeControls());
 
         PgnGame pgnGame = new PgnGame(Game.newGameFromStartingPosition());
         pgnGame.setWhite(currentGame.getWhite().getName());

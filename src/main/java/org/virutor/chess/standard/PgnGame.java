@@ -1,5 +1,17 @@
 package org.virutor.chess.standard;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.virutor.chess.model.Game;
+import org.virutor.chess.model.Game.Result;
+import org.virutor.chess.model.Game.ResultExplanation;
+import org.virutor.chess.model.GameNode;
+import org.virutor.chess.model.Position;
+import org.virutor.chess.standard.time.TimeControl;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,19 +32,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.virutor.chess.model.Game;
-import org.virutor.chess.model.Game.Result;
-import org.virutor.chess.model.Game.ResultExplanation;
-import org.virutor.chess.model.GameNode;
-import org.virutor.chess.model.Position;
-import org.virutor.chess.model.ui.GameData;
-import org.virutor.chess.standard.time.TimeControl;
 
 /**
  * TODO check Game for not null
@@ -90,7 +89,6 @@ public class PgnGame {
     }
 
     private Game game;
-    private GameData gameData;
     Map<String, Object> properties = new HashMap<String, Object>();
 
     //seven tag rooster
@@ -116,6 +114,15 @@ public class PgnGame {
     public void setProgramTypePlayer(byte color) {
         String property = color == Position.COLOR_WHITE ? PROPERTY_WHITE_TYPE : PROPERTY_BLACK_TYPE;
         setStringProperty(property, PROPERTY_PLAYER_TYPE_PROGRAM);
+    }
+
+    public void setTimeControls(List<TimeControl> timeControls) {
+        properties.put(PgnTimeControlHandler.TIME_CONTROL, timeControls);
+    }
+
+    public List<TimeControl> getTimeControls() {
+        Object o = properties.get(PgnTimeControlHandler.TIME_CONTROL);
+        return o == null ? new ArrayList<>() : new ArrayList<>((List<TimeControl>)o);
     }
 
 
@@ -220,33 +227,12 @@ public class PgnGame {
             movesStringBuilder.append(line);
         }
 
-        toAdd.fillGameData();
-
         MoveTextParser moveTextParser = new MoveTextParser(movesStringBuilder, game);
         moveTextParser.parse();
 
         games.add(toAdd);
         return false;
     }
-
-    private void fillGameData() {
-
-        //TODO rethink
-        if (gameData == null) {
-            gameData = new GameData();
-        }
-
-        gameData.setWhite((String) properties.get(PROPERTY_WHITE));
-        gameData.setBlack((String) properties.get(PROPERTY_BLACK));
-
-        //TODO one time control only
-        List<TimeControl> timeControls = (List<TimeControl>) properties.get(PgnTimeControlHandler.TIME_CONTROL);
-        if (timeControls != null) {
-            gameData.setTimeControls(timeControls);
-        }
-
-    }
-
 
     public PgnGame(Game game) {
         this.game = game;
@@ -483,15 +469,6 @@ public class PgnGame {
     public Game getGame() {
         return game;
     }
-
-    public GameData getGameData() {
-        return gameData;
-    }
-
-    public void setGameData(GameData gameData) {
-        this.gameData = gameData;
-    }
-
 
     public Map<String, Object> getProperties() {
         return Collections.unmodifiableMap(properties);

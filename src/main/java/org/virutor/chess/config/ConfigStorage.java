@@ -37,10 +37,11 @@ public abstract class ConfigStorage {
 		List<TimeControl> timeControls = (List<TimeControl>)config.lastGame.getProperties().get(PgnTimeControlHandler.TIME_CONTROL);
 		if(CollectionUtils.isEmpty(timeControls)) {
 			timeControls = getDefaultTimeControls();
-		}		
-		UiGame.instance.getGameData().setTimeControls(timeControls);		
-		UiGame.instance.getGameData().setWhite(config.lastGame.getWhite());		
-		UiGame.instance.getGameData().setBlack(config.lastGame.getBlack());
+		}
+
+		UiGame.instance.getPgnGame().setTimeControls(timeControls);
+		UiGame.instance.getPgnGame().setWhite(config.lastGame.getWhite());
+		UiGame.instance.getPgnGame().setBlack(config.lastGame.getBlack());
 
 		String whiteType = (String)config.lastGame.getProperties().get(PgnGame.PROPERTY_WHITE_TYPE);
 		applyPlayer(config, whiteType, config.lastGame.getWhite(), Position.COLOR_WHITE);

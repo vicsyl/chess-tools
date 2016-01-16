@@ -2,17 +2,12 @@ package org.virutor.chess.standard.time;
 
 public interface TimeControl {
 
-	public static final TimeControl UNKNOWN = new TimeControl(){
-		public long getTotalFirstTime() {
-			return -1;
-		} 
-	};    
-	public static final TimeControl NO_CONTROL = new TimeControl(){
-		public long getTotalFirstTime() {
-			return -1;
-		} 
-	};
-	
+	//FIXME exception?
+	public static final TimeControl UNKNOWN = () -> -1;
+
+	//FIXME exception?
+	public static final TimeControl NO_CONTROL = () -> -1;
+
 	long getTotalFirstTime();
 	
 }
